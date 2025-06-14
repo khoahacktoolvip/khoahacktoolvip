@@ -1,36 +1,3 @@
-import sys
-import threading
-import traceback
-import colorsys
-import math
-
-def hsv_to_ansi(i, total, brightness=1.0, saturation=1.0):
-    hue = (i / total) % 1.0
-    r, g, b = colorsys.hsv_to_rgb(hue, saturation, brightness)
-    ansi = 16 + int(r * 5) * 36 + int(g * 5) * 6 + int(b * 5)
-    return f"\033[38;5;{ansi}m"
-
-def rainbow_print(text):
-    for i, c in enumerate(text):
-        sys.stdout.write(hsv_to_ansi(i, len(text), 1.0, 1.0) + c)
-    sys.stdout.write("\033[0m\n")
-    sys.stdout.flush()
-
-def rainbow_traceback(exc_type, exc_value, tb):
-    tb_lines = traceback.format_exception(exc_type, exc_value, tb)
-    for line in tb_lines:
-        rainbow_print(line.rstrip())
-
-sys.excepthook = rainbow_traceback
-
-# Với Python >= 3.8 bạn cũng nên hook cả thread error
-if hasattr(threading, 'excepthook'):
-    def custom_thread_hook(args):
-        rainbow_traceback(args.exc_type, args.exc_value, args.exc_traceback)
-    threading.excepthook = custom_thread_hook
-
-
-
 import requests
 import time
 import json
