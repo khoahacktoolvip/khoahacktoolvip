@@ -147,7 +147,7 @@ intro_lines = [
     "> Admin        : NGUYỄN ĐĂNG KHOA",
     "> Tik Tok      : @ndk_exploit",
     "> Zalo         : 0963121607",
-    "> Telegram     : @dvmxh_toolsvip",
+    "> Telegram     : @Toolsvip_dvmxh",
     "> Facebooks    : https://www.facebook.com/nguyen.ang.khoa.798421/",
     "> Group        : https://www.facebook.com/groups/1138876097614502",
     "═══════════════════════════════════════════════════════════════════════",
