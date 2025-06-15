@@ -250,7 +250,7 @@ def get_shortened_link_phu(url):
             return {"status": "error", "message": "Không kết nối được với API Yeumoney."}
     except Exception as e:
         return {"status": "error", "message": f"Lỗi: {e}"}
-
+        
 
 def main():
     ip_address = get_ip_address()
