@@ -158,7 +158,7 @@ intro_lines = [
 
 message_lines = [
    "[DangKhoa_Dev] Cảm Ơn Bạn Đã Đồng Hành Cùng Tool",
-    "Chúc bạn gặt hái thành công trong hành trình kiếm tiền của mình!",
+    "Chúc bạn dùng tool vui vẻ và tràn đầy ý nghĩa!",
     "🔧 Đang Kích hoạt"
 ]
 
