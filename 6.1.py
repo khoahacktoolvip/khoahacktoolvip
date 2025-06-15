@@ -1,3 +1,309 @@
+import threading
+import base64
+import os
+import time
+import re
+import json
+import random
+import requests
+import socket
+import sys
+from time import sleep
+from datetime import datetime, timedelta
+from bs4 import BeautifulSoup
+from concurrent.futures import ThreadPoolExecutor
+import colorsys
+from colorama import init, Style
+import math
+
+# Kiểm tra và cài đặt thư viện cần thiết
+try:
+    from faker import Faker
+    from requests import session
+    from colorama import Fore, Style
+    import pystyle
+except ImportError:
+    os.system("pip install faker requests colorama bs4 pystyle")
+    os.system("pip3 install requests pysocks")
+    print('__Vui Lòng Chạy Lại Tool__')
+    sys.exit()
+
+init(autoreset=True)
+
+# Tạo hoặc đọc khóa mã hóa bằng base64
+secret_key = base64.urlsafe_b64encode(os.urandom(32))
+
+# Mã hóa và giải mã dữ liệu bằng base64
+def encrypt_data(data):
+    return base64.b64encode(data.encode()).decode()
+
+def decrypt_data(encrypted_data):
+    return base64.b64decode(encrypted_data.encode()).decode()
+
+# Màu sắc cho hiển thị
+xnhac = "\033[1;36m"
+do = "\033[1;31m"
+luc = "\033[1;32m"
+vang = "\033[1;33m"
+xduong = "\033[1;34m"
+hong = "\033[1;35m"
+trang = "\033[1;39m"
+end = '\033[0m'
+
+# ─────────── CÀI ĐẶT ─────────── #
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+# ─────────── MÀU CẦU VỒNG MƯỢT ─────────── #
+def hsv2rgb(h, s, v):
+    return colorsys.hsv_to_rgb(h, s, v)
+
+def rgb_to_ansi(r, g, b):
+    return 16 + (36 * round(r * 5)) + (6 * round(g * 5)) + round(b * 5)
+
+def smooth_rainbow(length, offset=0, brightness=1.0, saturation=0.9, phase_offset=0):
+    colors = []
+    for i in range(length):
+        hue = ((i + offset) / (length * 1.2) + phase_offset) % 1.0
+        r, g, b = hsv2rgb(hue, saturation, brightness)
+        ansi_code = rgb_to_ansi(r, g, b)
+        colors.append(ansi_code)
+    return colors
+
+# ─────────── GRADIENT LINE + GLOW + SWEEP ─────────── #
+def gradient_line(text, colors, light_sweep_pos=None, glow_strength=1):
+    result = ""
+    for i, char in enumerate(text):
+        color = colors[i % len(colors)]
+        distance = abs(i - light_sweep_pos) if light_sweep_pos is not None else 1000
+        if distance < 3:
+            intensity = max(0, (3 - distance) / 3) * glow_strength
+            result += f"\033[1m\033[38;5;{color}m{char}\033[0m"
+        else:
+            result += f"\033[38;5;{color}m{char}"
+    return result + "\033[0m"
+
+# ─────────── LOGO BREATHING + LIGHT SWEEP ─────────── #
+def render_logo_wave(frame, intensity=1):
+    global max_logo_length  # Use global to access the variable
+    output = ""
+    pulse = 0.5 + 0.5 * math.sin(frame * 0.06)  # breathing chậm
+    brightness = 0.85 + 0.15 * pulse
+    saturation = 0.88 + 0.1 * pulse
+    sweep_pos = int((math.sin(frame * 0.1) + 1) * (max_logo_length // 2))
+    phase_offset = math.sin(frame * 0.03) * 0.2  # wave động nhẹ
+
+    for i, line in enumerate(logo_lines):
+        shift = (frame + i * intensity)
+        colors = smooth_rainbow(len(line), shift, brightness, saturation, phase_offset)
+        output += gradient_line(line, colors, light_sweep_pos=sweep_pos, glow_strength=1.2) + "\n"
+    return output
+
+# ─────────── TYPEWRITER DRIP EFFECT ─────────── #
+def typewriter_effect(lines, base_delay=0.015, drip_max=0.03):
+    for line in lines:
+        output = ""
+        start_offset = random.randint(0, 80)
+        colors = smooth_rainbow(len(line), offset=start_offset)
+        for i, char in enumerate(line):
+            output += f"\033[38;5;{colors[i % len(colors)]}m{char}"
+            sys.stdout.write("\r" + output + Style.RESET_ALL)
+            sys.stdout.flush()
+            time.sleep(base_delay + random.uniform(0, drip_max))  # drip
+        print()
+        time.sleep(0.3)
+
+# ─────────── INTRO FADE-IN + MATRIX WAVE ─────────── #
+def show_intro_fadein(lines, fade_steps=12, delay=0.07):
+    base_offset = random.randint(0, 80)
+    for fade in range(1, fade_steps + 1):
+        clear()
+        print(render_logo_wave(fade + base_offset))
+        print()
+        brightness = fade / fade_steps
+        saturation = 0.75 + 0.25 * (fade / fade_steps)
+        for idx, line in enumerate(lines):
+            wave_offset = base_offset + fade * 4 + idx * 3
+            phase_offset = math.sin(fade * 0.1 + idx * 0.5) * 0.2
+            colors = smooth_rainbow(len(line), offset=wave_offset, brightness=brightness, saturation=saturation, phase_offset=phase_offset)
+            light_sweep_pos = int((math.sin(fade * 0.15 + idx) + 1) * (len(line) // 2))
+            print(gradient_line(line, colors, light_sweep_pos=light_sweep_pos, glow_strength=0.8))
+        time.sleep(delay)
+
+# ─────────── DATA ─────────── #
+logo_lines = [
+   "████████╗███╗░░░███╗  ██╗  ███╗░░██╗██████╗░██╗░░██╗  ██╗",
+   "╚══██╔══╝████╗░████║  ╚═╝  ████╗░██║██╔══██╗██║░██╔╝  ██║",
+   "░░░██║░░░██╔████╔██║  ░░░  ██╔██╗██║██║░░██║█████═╝░  ██║",
+   "░░░██║░░░██║╚██╔╝██║  ░░░  ██║╚████║██║░░██║██╔═██╗░  ╚═╝",
+   "░░░██║░░░██║░╚═╝░██║  ██╗  ██║░╚███║██████╔╝██║░╚██╗  ██╗",
+   "░░░╚═╝░░░╚═╝░░░░░╚═╝  ╚═╝  ╚═╝░░╚══╝╚═════╝░╚═╝░░╚═╝  ╚═╝"
+]
+
+intro_lines = [
+    "══════════════════════════════════════════════════════════════════════",
+    ">$ Mua key inbox admin",
+    "══════════════════════════════════════════════════════════════════════",
+    "> Admin        : NGUYỄN ĐĂNG KHOA",
+    "> Tik Tok      : @ndk_exploit",
+    "> Zalo         : 0963121607",
+    "> Telegram     : @dvmxh_toolsvip",
+    "> Facebooks    : https://www.facebook.com/nguyen.ang.khoa.798421/",
+    "> Group        : https://www.facebook.com/groups/1138876097614502",
+    "═══════════════════════════════════════════════════════════════════════",
+    "Bản Quyền © Nguyễn Đăng Khoa               Bản Quyền © Nguyễn Đăng Khoa",
+    "═══════════════════════════════════════════════════════════════════════",
+    "",
+]
+
+message_lines = [
+   "[DangKhoa_Dev] Cảm Ơn Bạn Đã Đồng Hành Cùng Tool",
+    "Chúc bạn gặt hái thành công trong hành trình kiếm tiền của mình!",
+    "🔧 Đang Kích hoạt"
+]
+
+# Tính max_logo_length toàn cục
+max_logo_length = max(len(line) for line in logo_lines)
+
+# ─────────── BANNER ─────────── #
+def banner():
+    clear()
+    typewriter_effect(message_lines)
+    animated_banner(frames=60, delay=0.045)
+    show_intro_fadein(intro_lines)
+
+def animated_banner(frames=60, delay=0.045):
+    start_offset = random.randint(0, 100)
+    for f in range(frames):
+        clear()
+        print(render_logo_wave(f + start_offset))
+        time.sleep(delay)
+
+def get_ip_address():
+    try:
+        response = requests.get('https://api.ipify.org?format=json')
+        ip_data = response.json()
+        ip_address = ip_data['ip']
+        return ip_address
+    except Exception as e:
+        print(f"Lỗi khi lấy địa chỉ IP: {e}")
+        return None
+
+def display_ip_address(ip_address):
+    if ip_address:
+        banner()
+        print(f"\033[1;97m[\033[1;91m<>\033[1;97m] \033[1;31mĐịa chỉ IP : {ip_address}")
+    else:
+        print("Không thể lấy địa chỉ IP của thiết bị.")
+
+def luu_thong_tin_ip(ip, key, expiration_date):
+    data = {ip: {'key': key, 'expiration_date': expiration_date.isoformat()}}
+    encrypted_data = encrypt_data(json.dumps(data))
+
+    with open('ip_key.json', 'w') as file:
+        file.write(encrypted_data)
+
+def tai_thong_tin_ip():
+    try:
+        with open('ip_key.json', 'r') as file:
+            encrypted_data = file.read()
+        data = json.loads(decrypt_data(encrypted_data))
+        return data
+    except FileNotFoundError:
+        return None
+
+def kiem_tra_ip(ip):
+    data = tai_thong_tin_ip()
+    if data and ip in data:
+        expiration_date = datetime.fromisoformat(data[ip]['expiration_date'])
+        if expiration_date > datetime.now():
+            return data[ip]['key']
+    return None
+
+def generate_key_and_url(ip_address):
+    ngay = int(datetime.now().day)
+    key1 = str(ngay * 27 + 27)
+    ip_numbers = ''.join(filter(str.isdigit, ip_address))
+    key = f'NDK{key1}{ip_numbers}'
+    expiration_date = datetime.now().replace(hour=23, minute=59, second=0, microsecond=0)
+    url = f'https://www.webkey.x10.mx/?ma={key}'
+    return url, key, expiration_date
+
+def da_qua_gio_moi():
+    now = datetime.now()
+    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+    return now >= midnight
+
+def get_shortened_link_phu(url):
+    try:
+        token = "e5ce8b377f21aa9ea4e38d6a55f44d8048189fee5ca75b4963b200b705622dbd"  # Thay bằng token của bạn
+        api_url = f"https://yeumoney.com/QL_api.php?token={token}&format=json&url={url}"
+
+        response = requests.get(api_url, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            if data['status'] == 'success':
+                return {"status": "success", "shortenedUrl": data['shortenedUrl']}
+            else:
+                return {"status": "error", "message": "Lỗi khi rút gọn link!"}
+        else:
+            return {"status": "error", "message": "Không kết nối được với API Yeumoney."}
+    except Exception as e:
+        return {"status": "error", "message": f"Lỗi: {e}"}
+
+
+def main():
+    ip_address = get_ip_address()
+    display_ip_address(ip_address)
+
+    if ip_address:
+        existing_key = kiem_tra_ip(ip_address)
+        if existing_key:
+            print(f"\033[1;97m[\033[1;91m<>\033[1;97m] \033[1;35mTool còn hạn, mời bạn dùng tool...")
+            time.sleep(2)
+        else:
+            if da_qua_gio_moi():
+                print("\033[1;33mQuá giờ sử dụng tool !!!")
+                return
+
+            url, key, expiration_date = generate_key_and_url(ip_address)
+
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                print("\033[1;97m[\033[1;91m<>\033[1;97m] \033[1;32mNhập 1 Để Lấy Key \033[1;33m( Free )")
+
+                while True:
+                    try:
+                        choice = input("\033[1;97m[\033[1;91m<>\033[1;97m] \033[1;34mNhập lựa chọn: ")
+                        print("\033[97m════════════════════════════════════════════════")
+                        if choice == "1":
+                            yeumoney_future = executor.submit(get_shortened_link_phu, url)
+                            yeumoney_data = yeumoney_future.result()
+                            if yeumoney_data and yeumoney_data.get('status') == "error":
+                                print(yeumoney_data.get('message'))
+                                return
+                            else:
+                                link_key_yeumoney = yeumoney_data.get('shortenedUrl')
+                                print('\033[1;97m[\033[1;91m<>\033[1;97m] \033[1;35mLink Để Vượt Key Là \033[1;36m:', link_key_yeumoney)
+
+                            while True:
+                                keynhap = input('\033[1;97m[\033[1;91m<>\033[1;97m] \033[1;33mKey Đã Vượt Là: \033[1;32m')
+                                if keynhap == key:
+                                    print('Key Đúng Mời Bạn Dùng Tool')
+                                    sleep(2)
+                                    luu_thong_tin_ip(ip_address, keynhap, expiration_date)
+                                    return
+                                else:
+                                    print('\033[1;97m[\033[1;91m<>\033[1;97m] \033[1;35mKey Sai Vui Lòng Vượt Lại Link \033[1;36m:', link_key_yeumoney)
+                    except ValueError:
+                        print("Vui lòng nhập số hợp lệ.")
+                    except KeyboardInterrupt:
+                        print("\n\033[1;97m[\033[1;91m<>\033[1;97m] \033[1;31mCảm ơn bạn đã dùng Tool !!!")
+                        sys.exit()
+
+if __name__ == '__main__':
+    main()
+
+
 import sys
 import threading
 import traceback
