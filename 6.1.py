@@ -76,6 +76,35 @@ formatted_device_id = format_device_id(random_id)
 
 #//////////////////////////
 
+import requests
+import random
+import string
+import hashlib,os
+
+trang = "\033[1;37m\033[1m"
+xanh_la = "\033[1;32m\033[1m"
+xanh_duong = "\033[1;34m\033[1m"
+xanhnhat = '\033[1m\033[38;5;51m'
+do = "\033[1;31m\033[1m\033[1m"
+xam = '\033[1;30m\033[1m'
+vang = "\033[1;33m\033[1m"
+tim = "\033[1;35m\033[1m"
+hongnhat = "#FFC0CB"
+kt_code = "</>"
+dac_biet = "\033[32;5;245m\033[1m\033[38;5;39m"
+vua = "\033[1;37m[>_<]\033[1;37m \033[1;37mNGUYENDANGKHOA\033[1;37m \033[1;37m=> \033[1;34m\033[1m"
+
+import os
+try:
+    from faker import Faker
+    from Crypto.Cipher import AES
+    from Crypto.Util.Padding import pad
+    import requests
+except ImportError:
+    os.system('pip install Faker')
+    os.system('pip install requests')
+    os.system('pip install pycryptodome')
+
 trang = "\033[1;37m\033[1m"
 xanh_la = "\033[1;32m\033[1m"
 xanh_duong = "\033[1;34m\033[1m"
@@ -87,77 +116,169 @@ tim = "\033[1;35m\033[1m"
 hongnhat = "#FFC0CB"
 kt_code = "</>"
 dac_biet = "\033[32;5;245m\033[1m\033[38;5;39m"
-vua = "\033[1;31m\033[1m\033[1m[\033[1;37m\033[1m=.=\033[1;31m\033[1m\033[1m] \033[1;37m\033[1m=> \033[1;32m\033[1m"
+vua = "\033[1;37m[>_<]\033[1;37m \033[1;37mNGUYENDANGKHOA\033[1;37m \033[1;37m=> \033[1;34m\033[1m"
 
 
-
+import os, json, sys, requests 
+from sys import platform
+from time import sleep
+from datetime import datetime
+from random import randint
+from pystyle import Colors, Colorate
+import uuid, re
+from bs4 import BeautifulSoup
 import os, sys, time, math, random, colorsys
-from colorama import init
 
-init(autoreset=True)
+# ────────── KÍCH HOẠT ANSI (Windows) ──────────
+if os.name == "nt":
+    import ctypes
+    kernel32 = ctypes.windll.kernel32
+    ENABLE_VT = 0x0004
+    handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE = -11
+    mode = ctypes.c_ulong()
+    if kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+        kernel32.SetConsoleMode(handle, mode.value | ENABLE_VT)
 
-# ─────────── CLEAR MÀN HÌNH ───────────
-def clear():
-    os.system("cls" if os.name == "nt" else "clear")
-
-# ─────────── HỆ MÀU CẦU VỒNG ───────────
-def hsv2rgb(h, s, v):
-    return colorsys.hsv_to_rgb(h, s, v)
+# ────────── HÀM TIỆN ÍCH ──────────
+def hsv2rgb(h, s, v): return colorsys.hsv_to_rgb(h, s, v)
 
 def rgb_to_ansi(r, g, b):
     return 16 + (36 * round(r * 5)) + (6 * round(g * 5)) + round(b * 5)
 
-def smooth_rainbow(length, offset=0, brightness=1.0, saturation=0.9, phase_offset=0):
-    return [rgb_to_ansi(*hsv2rgb(((i + offset) / (length * 1.2) + phase_offset) % 1.0, saturation, brightness)) for i in range(length)]
+def pastel_rainbow(length, offset=0, bright=0.95, sat=0.42, phase=0):
+    return [
+        rgb_to_ansi(*hsv2rgb(((i + offset) / (length * 1.2) + phase) % 1, sat, bright))
+        for i in range(length)
+    ]
 
-# ─────────── ÁNH SÁNG QUÉT DÒNG LOGO ───────────
-def gradient_line(text, colors, light_sweep_pos=None, glow_strength=1.0):
-    result = ""
-    for i, char in enumerate(text):
-        color = colors[i % len(colors)]
-        distance = abs(i - light_sweep_pos) if light_sweep_pos is not None else 1000
-        if distance < 3:
-            result += f"\033[1m\033[38;5;{color}m{char}\033[0m"
+def gradient_line(text, colors, sweep=None):
+    out = []
+    for i, ch in enumerate(text):
+        c = colors[i % len(colors)]
+        if sweep is not None and abs(i - sweep) < 3:
+            out.append(f"\033[1m\033[38;5;{c}m{ch}\033[0m")
         else:
-            result += f"\033[38;5;{color}m{char}"
-    return result + "\033[0m"
+            out.append(f"\033[38;5;{c}m{ch}")
+    return "".join(out) + "\033[0m"
 
-# ─────────── HIỆU ỨNG NHỊP THỞ ───────────
-def render_logo_wave(frame, intensity=1):
-    output = ""
-    pulse = 0.5 + 0.5 * math.sin(frame * 0.06)
-    brightness = 0.85 + 0.15 * pulse
-    saturation = 0.88 + 0.1 * pulse
-    sweep_pos = int((math.sin(frame * 0.1) + 1) * (max_logo_length // 2))
-    phase_offset = math.sin(frame * 0.03) * 0.2
-    for i, line in enumerate(logo_lines):
-        shift = frame + i * intensity
-        colors = smooth_rainbow(len(line), shift, brightness, saturation, phase_offset)
-        output += gradient_line(line, colors, light_sweep_pos=sweep_pos, glow_strength=1.2) + "\n"
-    return output
+def render_frame(f):
+    pulse = 0.5 + 0.5 * math.sin(f * 0.03)
+    bright = 0.9 + 0.1 * pulse
+    sat    = 0.38 + 0.08 * pulse
+    sweep  = int((math.sin(f * 0.05) + 1) * max_len // 2)
+    phase  = math.sin(f * 0.025) * .25
 
-# ─────────── HIỆN BANNER ANIMATION ───────────
-def animated_banner(frames=40, delay=0.045):
-    start_offset = random.randint(0, 100)
-    for f in range(frames):
-        clear()
-        print(render_logo_wave(f + start_offset))
-        time.sleep(delay)
+    lines = []
+    for idx, raw in enumerate(logo):
+        shift = f + idx * .6
+        colors = pastel_rainbow(len(raw), shift, bright, sat, phase)
+        lines.append(gradient_line(raw, colors, sweep))
+    return lines
 
-# ─────────── LOGO TOOL ───────────
-logo_lines = [
-   "████████╗███╗░░░███╗  ██╗  ███╗░░██╗██████╗░██╗░░██╗  ██╗",
-   "╚══██╔══╝████╗░████║  ╚═╝  ████╗░██║██╔══██╗██║░██╔╝  ██║",
-   "░░░██║░░░██╔████╔██║  ░░░  ██╔██╗██║██║░░██║█████═╝░  ██║",
-   "░░░██║░░░██║╚██╔╝██║  ░░░  ██║╚████║██║░░██║██╔═██╗░  ╚═╝",
-   "░░░██║░░░██║░╚═╝░██║  ██╗  ██║░╚███║██████╔╝██║░╚██╗  ██╗",
-   "░░░╚═╝░░░╚═╝░░░░░╚═╝  ╚═╝  ╚═╝░░╚══╝╚═════╝░╚═╝░░╚═╝  ╚═╝"
+def center_text(text, width):
+    return text.center(width)
+
+# ────────── LOGO ASCII ──────────
+logo = [
+    "╔═══════════════════════════════════════════════════════════════╗",
+    "║   ████████╗███╗   ███╗  ██╗  ███╗  ██╗██████╗ ██╗  ██╗  ██╗   ║",
+    "║   ╚══██╔══╝████╗ ████║  ╚═╝  ████╗ ██║██╔══██╗██║ ██╔╝  ██║   ║",
+    "║      ██║   ██╔████╔██║       ██╔██╗██║██║  ██║█████═╝   ██║   ║",
+    "║      ██║   ██║╚██╔╝██║       ██║╚████║██║  ██║██╔═██╗   ╚═╝   ║",
+    "║      ██║   ██║ ╚═╝ ██║  ██╗  ██║ ╚███║██████╔╝██║ ╚██╗  ██╗   ║",
+    "║      ╚═╝   ╚═╝     ╚═╝  ╚═╝  ╚═╝  ╚══╝╚═════╝ ╚═╝  ╚═╝  ╚═╝   ║",
+    "╚═══════════════════════════════════════════════════════════════╝"
 ]
+max_len   = max(len(l) for l in logo)
+logo_h    = len(logo)
+duration  = 3          # giây chạy
+delay     = 0.06
+frames    = int(duration / delay)
+offset    = random.randint(0, 3)
 
-# ─────────── KHỞI CHẠY ───────────
-max_logo_length = max(len(line) for line in logo_lines)
-animated_banner()
+# ────────── BANNER SETUP ──────────
+banner_width = max_len + 4
+title = "[>_<] NGUYENDANGKHOA /// DANGKHOA_DEV"
+footer = "YOUTOBE SHARE TOOL :  https://www.youtube.com/channel/UCGJmaIZ_JbAwoOrHeBZru6A"
+start_message = "NHÓM ZALO : https://zalo.me/g/wyboil196"
+end_message = """ 
+[>_<] NGUYENDANGKHOA                          source by DangKhoa_Dev
+______________________________________________________________________
+NHÓM ZALO : https://zalo.me/g/wyboil196 
+______________________________________________________________________
+SHARE TOOL :  https://www.youtube.com/channel/UCGJmaIZ_JbAwoOrHeBZru6A
+______________________________________________________________________
+"""
+# ────────── IN BANNER ──────────
+# Clear screen
+print("\033[2J\033[H", end="")
 
+# Print title
+title_colors = pastel_rainbow(len(title), offset)
+print(center_text(gradient_line(title, title_colors), banner_width))
+
+# Print top border
+border = "═" * (banner_width - 2)
+print(f"╔{border}╗")
+
+# Print initial logo
+first = render_frame(offset)
+for line in first:
+    print(f"║ {line.ljust(max_len)} ║")
+
+# Print bottom border
+print(f"╚{border}╝")
+
+# Print start message
+start_colors = pastel_rainbow(len(start_message), offset)
+print(center_text(gradient_line(start_message, start_colors), banner_width), flush=True)
+
+# ────────── VÒNG LẶP ANIMATION ──────────
+for f in range(1, frames):
+    time.sleep(delay)
+    # Move cursor to start of logo
+    sys.stdout.write(f"\033[{logo_h + 2}F")
+    # Print top border
+    sys.stdout.write(f"╔{border}╗\n")
+    # Print animated logo
+    for line in render_frame(f + offset):
+        sys.stdout.write(f"║ {line.ljust(max_len)} ║\n")
+    # Print bottom border
+    sys.stdout.write(f"╚{border}╝\n")
+    sys.stdout.flush()
+
+# ────────── KẾT THÚC BANNER & CHUYỂN SANG API ──────────
+time.sleep(delay)
+# Clear below logo
+sys.stdout.write(f"\033[{logo_h + 2}F\033[J")
+# Reprint title
+print(center_text(gradient_line(title, title_colors), banner_width))
+# Reprint top border
+print(f"╔{border}╗")
+# Print final frame
+for line in render_frame(frames + offset):
+    print(f"║ {line.ljust(max_len)} ║")
+# Reprint bottom border
+print(f"╚{border}╝")
+# Print transition message
+end_colors = pastel_rainbow(len(end_message), offset)
+print(center_text(gradient_line(end_message, end_colors), banner_width))
+import sys
+from time import sleep
+def banner():
+    top_banner = "\033[1;37m[>_<] NGUYENDANGKHOA /// DANGKHOA_DEV...\033[0m\n"
+    bottom_banner = (
+        "\033[1;33m╔═══════════════════════════════════════════════════════════════════╗\033[0m\n"
+        "\033[1;33m║                         TOOL TDS FULL JOB                         ║\033[0m\n"
+        "\033[1;33m╚═══════════════════════════════════════════════════════════════════╝\033[0m\n"
+    )
+    for char in top_banner + bottom_banner:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        sleep(0.001)
+
+# Gọi nó đầu chương trình
+banner()
 
 def send_otp_via_sapo(sdt):
     cookies = {
