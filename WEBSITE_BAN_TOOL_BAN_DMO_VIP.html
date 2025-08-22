@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DangKhoa_Dev • Tool Store + Admin (Demo VIP)</title>
+  <meta name="description" content="Website Bán Tool DangKhoa_Dev. Tool Tại Website Có Thể Mua Tại Chính Trang Web Này Qua Thanh Toán" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+    :root{
+      /* Brand Colors - Adjusted to match eki.my.id's vibrant purples, blues, greens */
+      --brand1:#AE67FA; /* Lighter Purple */
+      --brand2:#F49867; /* Orange */
+      --brand3:#56D7C8; /* Teal Green */
+      --brand4:#7873F5; /* Deeper Purple */
+      --brand5:#34B0F5; /* Bright Blue */
+
+      /* Dark Theme */
+      --bg-dark:#0B0E16; /* Darker Background */
+      --panel-dark:rgba(255,255,255,.06); /* Slightly more opaque glass */
+      --txt-dark:#e6eef8; /* Light text for dark background */
+
+      /* Light Theme (Fallbacks, not primary focus for eki.my.id style) */
+      --bg-light:#f6f7fb;
+      --panel-light:#ffffff;
+      --txt-light:#0b1220;
+
+      /* Glassmorphism Elements */
+      --glass: rgba(255,255,255,0.08); /* Base glass effect */
+      --glass-2: rgba(255,255,255,0.12); /* Stronger glass effect */
+      --glass-border: rgba(255,255,255,0.15); /* Glass border */
+
+      /* Muted Text */
+      --muted-dark:#9fb0d4;
+      --muted-light:#6b7280;
+
+      /* Accent & Status Colors */
+      --accent:var(--brand3); /* Teal Green accent */
+      --danger:#ef4444;
+      --warn:#f59e0b;
+
+      /* Particle Effect Colors */
+      --particle-color: rgba(68, 221, 238, 0.7); /* Cyan */
+      --line-color: rgba(120, 115, 245, 0.4); /* Purple */
+    }
+    html{
+        background: linear-gradient(135deg, var(--bg-dark), #1c202e);
+        color: var(--txt-dark);
+        transition: background-color 0.3s ease, color 0.3s ease;
+        scroll-behavior: smooth;
+    }
+    html[data-theme='light']{
+        background: linear-gradient(135deg, var(--bg-light), #e0e2e8);
+        color: var(--txt-light);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial,'Courier New',monospace;min-height:100vh; overflow-x: hidden;}
+
+    /* Navbar */
+    .navbar{position:fixed;inset-inline:0;top:0;height:72px;display:flex;align-items:center;justify-content:center;z-index:40;padding:0 18px;background:linear-gradient(180deg,rgba(0,0,0,.35),transparent);backdrop-filter:blur(12px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .nav-inner{max-width:100%;
+    width:100%;display:flex;align-items:center;justify-content:space-between;
+    padding-inline: 40px;
+    }
+    @media(max-width:1200px){.nav-inner{padding-inline: 18px;}} /* Reduced padding for mobile */
+
+    .brand{display:flex;gap:8px;align-items:center;font-weight:900;font-size:1.35rem;
+    color: var(--txt-dark);
+    }
+    .brand .logo{width:40px;height:40px;border-radius:10px;
+    background:conic-gradient(from 90deg,var(--brand1),var(--brand5));box-shadow:0 6px 20px rgba(0,0,0,.3);
+    }
+    .brand-text {
+        background:linear-gradient(90deg,var(--brand3),var(--brand4));
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+    }
+
+    /* Nav Links in Header (for desktop) */
+    .header-nav-links {
+        display: flex;
+        gap: 25px;
+        margin-left: auto;
+        margin-right: 25px;
+    }
+    .header-nav-links a {
+        color: var(--muted-dark);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: color 0.2s ease, text-shadow 0.2s ease;
+    }
+    .header-nav-links a:hover {
+        color: var(--brand3);
+        text-shadow: 0 0 8px var(--brand3);
+    }
+    .header-nav-links a.active {
+        color: var(--brand5);
+        text-shadow: 0 0 10px var(--brand5);
+    }
+    @media (max-width: 1200px) {
+        .header-nav-links {
+            display: none;
+        }
+    }
+
+
+    .cta{display:flex;gap:14px;align-items:center}
+    .btn{border:0;padding:12px 18px;border-radius:12px;cursor:pointer;font-weight:700;transition:transform .2s, box-shadow .2s, background .2s;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .btn:hover{transform:translateY(-3px);box-shadow:0 12px 25px rgba(0,0,0,.25)}
+    .btn-glass{background:var(--glass);color:inherit;backdrop-filter:blur(10px);border:1px solid var(--glass-border);
+    }
+    .btn-glass:hover{background:var(--glass-2);}
+    .btn-primary{background:linear-gradient(90deg,var(--brand1),var(--brand4));color:#fff;box-shadow:0 8px 20px rgba(174,103,250,.3);
+    border:1px solid rgba(174,103,250,.3);
+    }
+    .btn-primary:hover{background:linear-gradient(90deg,var(--brand4),var(--brand1));}
+    .btn-danger{background:linear-gradient(90deg,#f43f5e,#fb923c);color:#fff}
+    .btn-success{background:linear-gradient(90deg,#10b981,#06b6d4);color:#fff}
+
+    /* Site grid & Mobile menu */
+    .site-wrap{max-width:100%;
+    margin:90px auto 40px;
+    display:grid;
+    grid-template-columns:220px 1fr 260px; /* Adjusted sidebar sizes for wider main content */
+    gap:28px;
+    padding-inline:40px;
+    }
+    @media(max-width:1200px){.site-wrap{grid-template-columns:1fr;grid-auto-rows:min-content;padding:0 18px}}
+    
+    .side-menu{position:fixed;
+    top:0;left:0;height:100%;width:280px;transform:translateX(-100%);padding-top:0;
+    background: rgba(11, 14, 22, 0.9);
+    backdrop-filter: blur(15px);
+    box-shadow:0 0 40px rgba(0,0,0,.7);z-index:90;overflow-y:auto;
+    border-radius: 0 20px 20px 0;
+    transition:transform .3s ease-in-out;
+    }
+    .side-menu.active{transform:translateX(0)}
+
+    .side-menu .brand-in-menu {
+        display: flex;
+        padding: 20px 22px;
+        font-size: 1.5rem;
+        font-weight: 900;
+        background:linear-gradient(90deg,var(--brand3),var(--brand4)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid rgba(255,255,255,.1);
+        margin-bottom: 15px;
+    }
+    .side-menu .brand-in-menu .logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: conic-gradient(from 90deg,var(--brand1),var(--brand2),var(--brand3),var(--brand4));
+        box-shadow:0 8px 30px rgba(0,0,0,.35);
+    }
+    
+    /* New: Mobile auth/admin buttons inside side menu */
+    .side-menu-auth-actions {
+        display: none; /* Hidden by default, shown on mobile */
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 22px 20px;
+        border-bottom: 1px solid rgba(255,255,255,.1);
+        margin-bottom: 15px;
+    }
+    .side-menu-auth-actions .btn {
+        width: 100%;
+        text-align: center;
+    }
+    .side-menu-auth-actions .btn-logout {
+        display: none; /* Initially hidden, controlled by JS */
+    }
+
+    @media (max-width: 1200px) {
+        /* Hide auth buttons from main navbar on mobile */
+        .navbar .cta .btn-glass,
+        .navbar .cta .btn-primary:not(#btnLogout) { /* Exclude logout button if it was there */
+            display: none;
+        }
+        /* Show mobile auth/admin actions in side menu */
+        .side-menu-auth-actions {
+            display: flex;
+        }
+        /* Adjust theme toggle for mobile if it needs specific placement */
+        .navbar .cta label {
+            margin-left: auto; /* Push it to the right */
+        }
+    }
+
+
+    .side-menu a{display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;
+    text-decoration:none;color:inherit;font-weight:600;margin:0 22px 10px;
+    transition:background .2s, transform .2s, color .2s;
+    }
+    .side-menu a:hover{transform:translateX(6px);background:rgba(255,255,255,.06); color: var(--brand2);}
+    .side-menu a.active{background:linear-gradient(90deg,var(--brand1),var(--brand4));color:#fff;box-shadow:0 4px 15px rgba(120,80,200,.2);}
+    
+    .mobile-menu-btn{
+        display: block;
+        font-size:1.8rem;
+        background:transparent;
+        border:none;
+        color:inherit;
+        cursor:pointer;
+        transition:transform .2s;
+        padding: 5px 10px; /* Added padding for easier touch target */
+        margin-right: 15px; /* Space from brand logo */
+    }
+    .mobile-menu-btn:active{transform:scale(0.9);}
+
+    @media(max-width:1200px){
+      .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:80;}
+      .overlay.active{display:block}
+    }
+
+    /* Explicitly place grid items on larger screens */
+    @media (min-width: 1201px) {
+        .side-menu {
+            grid-column: 1 / 2;
+            position: static; /* Ensure it stays in its grid column on desktop */
+            width: 220px; /* Fixed width for desktop */
+            transform: translateX(0); /* Ensure it's always visible */
+            background: transparent; /* No background filter, takes theme background */
+            backdrop-filter: none;
+            box-shadow: none;
+            border-radius: 0;
+            overflow-y: visible;
+            padding-top: 20px; /* Adjust padding if needed */
+        }
+        .main {
+            grid-column: 2 / 3;
+        }
+        .sidebar {
+            grid-column: 3 / 4;
+            position: static; /* Force it to stay in document flow within grid */
+            top: auto; /* Remove top property */
+        }
+        /* Hide mobile menu button on desktop */
+        .mobile-menu-btn {
+            display: none;
+        }
+        /* Adjust brand in menu for desktop */
+        .side-menu .brand-in-menu {
+            display: none; /* Hide brand in menu when it's desktop sidebar */
+        }
+        .side-menu a {
+            margin: 0 0 10px 0; /* Remove horizontal margin for cleaner look */
+        }
+        .side-menu-auth-actions {
+            display: none; /* Hide these on desktop */
+        }
+    }
+
+
+    /* Main content */
+    .main{padding:24px;
+    background:var(--panel-dark);border-radius:20px;
+    box-shadow:0 8px 30px rgba(0,0,0,.3);
+    backdrop-filter: blur(10px);
+    border:1px solid var(--glass-border);
+    }
+    html[data-theme='light'] .main{background:var(--panel-light);box-shadow:0 8px 30px rgba(0,0,0,.1);}
+    
+    .welcome-card{padding:0;
+    border-radius:20px;
+    background: transparent;
+    backdrop-filter:none;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow: none;
+    border:none;
+    width: 100%;
+    height: 450px;
+    max-width: 100%;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    }
+    html[data-theme='light'] .welcome-card{background: transparent;}
+    .welcome-title, .welcome-sub {
+        display: none;
+    }
+    .welcome-left {
+        display: none;
+    }
+
+    /* Existing banner styling */
+    .banner-vip-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #0d0d1a;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        border: 1px solid var(--glass-border);
+    }
+    .banner-vip-container img {
+        display: none;
+    }
+    .banner-vip-container canvas {
+        position: absolute;
+        inset: 0;
+        display: block;
+        z-index: 1;
+    }
+    .banner-vip-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.3);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 40px 60px;
+        gap: 40px;
+        flex-wrap: wrap;
+        height: 100%;
+        z-index: 2;
+        backdrop-filter: blur(8px) brightness(1.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .banner-vip-overlay:hover {
+        transform: scale(1.005);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    }
+
+    /* Styling for the new banner content */
+    .banner-content-left {
+        flex: 1;
+        min-width: 300px;
+        text-align: left;
+    }
+
+    .banner-illustration-right {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 400px;
+        min-width: 250px;
+    }
+
+    .banner-illustration-right img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 0 20px rgba(120,115,245,0.6));
+    }
+
+    .banner-tag {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 10px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #fff;
+        display: inline-block;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .banner-main-title {
+        font-size: 3.2rem;
+        font-weight: 900;
+        background: linear-gradient(90deg, var(--brand3), var(--brand5));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0 0 5px 0;
+        line-height: 1.1;
+        filter: drop-shadow(0 0 10px rgba(34,211,238,0.7));
+    }
+
+    .banner-subtitle {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--brand4);
+        margin: 0 0 10px 0;
+        filter: drop-shadow(0 0 5px rgba(120,115,245,0.5));
+    }
+
+    .banner-description {
+        font-size: 1.0rem;
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 25px;
+        max-width: 450px;
+        line-height: 1.5;
+    }
+
+    .banner-skills {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .skill-tag {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(3px);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--brand5);
+        transition: background 0.2s ease;
+    }
+    .skill-tag:hover {
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+    }
+
+    .banner-socials {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .social-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.0rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .social-icon:hover {
+        background: var(--brand4);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 5px 15px rgba(120,115,245,0.4);
+    }
+
+    .banner-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+        flex-wrap: wrap;
+    }
+    
+    /* Buttons in banner actions */
+    .banner-actions .btn-primary {
+        background: linear-gradient(90deg, var(--brand1), var(--brand4));
+        box-shadow: 0 8px 20px rgba(174,103,250,.3);
+    }
+    .banner-actions .btn-primary:hover {
+        background: linear-gradient(90deg, var(--brand4), var(--brand1));
+    }
+    .banner-actions .btn-glass {
+        color: var(--brand5);
+        border-color: var(--brand5);
+        background: rgba(52, 176, 245, 0.1);
+        box-shadow: 0 5px 15px rgba(52, 176, 245, 0.2);
+    }
+    .banner-actions .btn-glass:hover {
+        background: rgba(52, 176, 245, 0.2);
+        color: white;
+    }
+
+
+    /* Responsive adjustments for banner */
+    @media (max-width: 992px) {
+        .welcome-card {
+            height: auto;
+            max-width: 100%;
+        }
+        .banner-vip-overlay {
+            flex-direction: column-reverse;
+            text-align: center;
+            padding: 30px;
+            height: 100%;
+        }
+        .banner-content-left {
+            text-align: center;
+            min-width: unset;
+            width: 100%;
+            padding-right: 0;
+            margin-bottom: 20px;
+        }
+        .banner-illustration-right {
+            min-width: unset;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 25px;
+        }
+        .banner-tag, .banner-skills, .banner-socials, .banner-actions {
+            justify-content: center;
+            width: 100%;
+        }
+        .banner-description {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .banner-main-title {
+            font-size: 2.5rem;
+        }
+        .banner-subtitle {
+            font-size: 1.4rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .banner-main-title {
+            font-size: 2rem;
+        }
+        .banner-subtitle {
+            font-size: 1.2rem;
+        }
+        .banner-vip-container {
+            padding-bottom: 0;
+            height: auto;
+        }
+        .banner-vip-overlay {
+            padding: 20px;
+        }
+    }
+
+    /* Balance display in Store */
+    .balance-in-store-card {
+        background: linear-gradient(135deg, var(--brand4), var(--brand1));
+        padding: 20px 25px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        animation: slideInFromTop .5s ease-out;
+    }
+    .balance-in-store-card .title {
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+    .balance-in-store-card .value {
+        font-size: 2.2rem;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+    .balance-in-store-card .btn-topup-store {
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 10px 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        transition: background .3s ease;
+    }
+    .balance-in-store-card .btn-topup-store:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    @keyframes slideInFromTop {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+
+    /* Store */
+    .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:24px;
+    margin-top:0px;
+    }
+    .tool-card{padding:20px;border-radius:20px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    box-shadow: 0 6px 20px rgba(0,0,0,.2);
+    backdrop-filter: blur(8px);
+    border:1px solid var(--glass-border);
+    display:flex;flex-direction:column;gap:10px;transition:transform .2s ease, box-shadow .2s, background .2s;
+    }
+    html[data-theme='light'] .tool-card{background: linear-gradient(145deg, rgba(0,0,0,0.02), rgba(0,0,0,0.005));}
+    .tool-card:hover{transform:translateY(-6px);box-shadow:0 16px 35px rgba(0,0,0,.35);}
+    .tool-card h4{margin:0;font-size:1.2rem;color:var(--brand5)}
+    .tool-actions{margin-top:auto;display:flex;gap:12px} /* Added flex and gap for buttons */
+    .tool-actions .btn { flex-grow: 1; text-align: center; } /* Make buttons fill space */
+    .price{font-weight:900;font-size:1.2rem;color:var(--brand3)}
+
+    /* Right sidebar */
+    .sidebar{position:sticky;top:90px;padding:22px;border-radius:20px;
+    background:var(--panel-dark);box-shadow:0 8px 30px rgba(0,0,0,.3);
+    backdrop-filter: blur(10px);
+    border:1px solid var(--glass-border);
+    height:fit-content;transition:transform .3s ease-in-out, background .3s ease;
+    }
+    html[data-theme='light'] .sidebar{background:var(--panel-light);box-shadow:0 8px 30px rgba(0,0,0,.1);}
+
+    /* Lists */
+    .mytools-list{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+    .mytool{padding:14px;border-radius:16px;
+    background:rgba(255,255,255,.03);display:flex;justify-content:space-between;align-items:center;transition:transform .2s, background .2s;
+    border:1px solid rgba(255,255,255,.05);
+    }
+    .mytool:hover{transform:translateX(8px);background:rgba(255,255,255,.05);}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,0,.8));
+    backdrop-filter:blur(8px);z-index:120}
+    .modal.active{display:flex}
+    .modal-card{width:100%;max-width:600px;
+    padding:30px;border-radius:20px;
+    background:var(--panel-dark);box-shadow:0 40px 100px rgba(0,0,0,.8);
+    animation:fadeIn .4s ease-out;
+    backdrop-filter: blur(15px);
+    border:1px solid var(--glass-border);
+    }
+    html[data-theme='light'] .modal-card{background:var(--panel-light);box-shadow:0 40px 100px rgba(0,0,0,.3);}
+    @keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+
+    .field{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+    .field label{font-weight:600;font-size:1.05rem;}
+    .field input, .field select, .field textarea{padding:14px;border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:inherit;transition:border-color .2s, background .2s;
+    }
+    .field input:focus, .field textarea:focus{outline:none;border-color:var(--brand4);background:rgba(255,255,255,.05);}
+    html[data-theme='light'] .field input, html[data-theme='light'] .field textarea{background:#f0f0f5;border-color:#e0e0e5;}
+
+    /* Table */
+    table{width:100%;border-collapse:collapse;margin-top:16px;font-size:0.95rem;}
+    th,td{padding:14px;border-bottom:1px solid var(--glass-border);text-align:left;}
+    th{background:rgba(255,255,255,.05);font-weight:700;}
+    tbody tr:hover{background:rgba(255,255,255,.05);}
+
+    /* Tabs */
+    .tabs{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
+    .tabs .tab{padding:12px 20px;border-radius:14px;
+    background:var(--glass);cursor:pointer;font-weight:700;transition:background .2s, color .2s;
+    }
+    .tabs .tab:hover{background:var(--glass-2); color: var(--brand3);}
+    .tabs .tab.active{background:linear-gradient(90deg,var(--brand1),var(--brand4));color:#fff;box-shadow:0 3px 10px rgba(120,80,200,.2);}
+
+    /* Toast */
+    #dk_toast{position:fixed;right:20px;bottom:20px;z-index:9999}
+    #dk_toast div{font-weight:700;border-radius:12px;}
+
+    /* Helpers */
+    .muted{color:var(--muted-dark)}
+    .hidden{display:none}
+    .copy{cursor:pointer;text-decoration:underline;font-weight:600;opacity:.8;transition:opacity .2s;color:var(--brand5)}
+    .copy:hover{opacity:1;color:var(--brand3);}
+
+    /* Map */
+    .map-container{height:350px;
+    width:100%;border-radius:16px;overflow:hidden;background:#333;position:relative;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    .map-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;background:rgba(0,0,0,0.85);z-index:10;}
+    .map-loader::after {
+        content: '';
+        border: 4px solid rgba(255,255,255,0.3);
+        border-top: 4px solid var(--brand4);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin-top: 10px;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    /* Pulse animation for visit count */
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .pulse-animation {
+        animation: pulse 0.6s ease-out;
+    }
+  </style>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nqc+ByxW+zow+xLdD6A/uTJSJm7t9VbB3K91I+C08=" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4z7F/k2x2xI8+aWpT4u2+yC1G/8VzWq4i1r4oF9A=" crossorigin="" />
+</head>
+<body>
+  <div class="overlay" id="mobileOverlay" aria-hidden="true"></div>
+  <header class="navbar">
+    <div class="nav-inner">
+      <button type="button" class="mobile-menu-btn" id="btnOpenMobileMenu" aria-label="Mở menu điều hướng">☰</button>
+      <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="brand-text">DangKhoa_Dev</div>
+      </div>
+      <nav class="header-nav-links" role="navigation">
+          <a href="#welcomeSection" class="menu-item active" data-view="home">Home</a>
+          <a href="#storeView" class="menu-item" data-view="store">Store</a>
+          <a href="#profileView" class="menu-item" data-view="profile">Profile</a>
+          <a href="#statsView" class="menu-item" data-view="stats">Stats</a>
+          <a href="#contactView" class="menu-item" data-view="contact">Contact</a>
+      </nav>
+      <div class="cta">
+        <label title="Theme" class="btn-glass" style="display:flex;align-items:center;gap:8px;border-radius:12px;padding:8px 12px;cursor:pointer">
+          <input type="checkbox" id="themeToggle" style="display:none" aria-label="Chuyển đổi chủ đề sáng/tối" /> 🌗
+        </label>
+        <button type="button" class="btn btn-glass" id="btnOpenAuth" aria-label="Đăng nhập hoặc Đăng ký">Đăng nhập / Đăng ký</button>
+        <button type="button" class="btn btn-primary" id="btnOpenAdmin" aria-label="Đăng nhập với quyền Admin">Admin</button>
+        <button type="button" class="btn btn-primary hidden" id="btnLogout" aria-label="Đăng xuất">Đăng xuất</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="site-wrap">
+    <!-- LEFT MENU (on PC) / MOBILE MENU (on phone) -->
+    <aside class="side-menu" id="sideMenu" role="navigation">
+      <div class="brand-in-menu">
+          <div class="logo" aria-hidden="true"></div>
+          <div>DangKhoa_Dev</div>
+      </div>
+      <!-- New: Mobile auth/admin buttons inside side menu -->
+      <div class="side-menu-auth-actions" id="sideMenuAuthActions">
+            <button type="button" class="btn btn-glass" id="sideMenuBtnOpenAuth" aria-label="Đăng nhập hoặc Đăng ký">Đăng nhập / Đăng ký</button>
+            <button type="button" class="btn btn-primary" id="sideMenuBtnOpenAdmin" aria-label="Đăng nhập với quyền Admin">Admin</button>
+            <button type="button" class="btn btn-primary btn-logout hidden" id="sideMenuBtnLogout" aria-label="Đăng xuất">Đăng xuất</button>
+      </div>
+      <!-- Current User / Admin Info in Mobile Menu -->
+      <div class="small-muted" style="margin:0 22px; margin-top: 15px;">Phiên hiện tại</div>
+      <div id="sidebarUser" style="margin:8px 22px 10px;font-weight:800">Chưa đăng nhập</div>
+      <div id="adminBadge" class="small-muted hidden" style="margin:6px 22px">Bạn đang ở chế độ Admin</div>
+
+      <a class="menu-item active" data-view="home" aria-label="Trang chủ">🏠 Trang chủ</a>
+      <a class="menu-item" data-view="store" aria-label="Tool Store">🛒 Tool Store</a>
+      <a class="menu-item" data-view="mytools" aria-label="My Tools">📦 My Tools</a>
+      <a class="menu-item" data-view="profile" aria-label="Hồ sơ">👤 Hồ sơ</a>
+      <a class="menu-item" data-view="tx" aria-label="Lịch sử giao dịch">🧾 Lịch sử giao dịch</a>
+      <a class="menu-item" data-view="topup" aria-label="Nạp tiền">💰 Nạp tiền</a>
+      <a class="menu-item" data-view="stats" aria-label="Thống kê">📈 Thống kê</a>
+      <a class="menu-item" data-view="contact" aria-label="Liên hệ">✉ Liên hệ</a>
+      <div style="height:12px"></div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main" role="main">
+      <!-- Welcome -->
+      <section id="welcomeSection" aria-labelledby="welcomeTitle">
+        <div class="welcome-card">
+          <div class="banner-vip-container">
+            <!-- Canvas for dynamic particle background -->
+            <canvas id="bannerCanvas"></canvas>
+            <div class="banner-vip-overlay">
+                <div class="banner-content-left">
+                    <div class="banner-tag">⚡ Ready to innovate</div>
+                    <h3 class="banner-main-title">Dang Khoa Developer</h3>
+                    <p class="banner-subtitle">Tool & Utilities</p>
+                    <p class="banner-description">Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.</p>
+                    <div class="banner-skills">
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">Javascript</span>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">Tailwind</span>
+                    </div>
+                    <div class="banner-socials">
+                        <a href="#" class="social-icon">IN</a>
+                        <a href="#" class="social-icon">LI</a>
+                        <a href="#" class="social-icon">IG</a>
+                    </div>
+                    <div class="banner-actions">
+                        <button type="button" class="btn btn-primary" id="bannerProjectsBtn">Projects ↗</button>
+                        <button type="button" class="btn btn-glass" id="bannerContactBtn">Contact ✉</button>
+                    </div>
+                </div>
+                <div class="banner-illustration-right">
+                    <img src="uploaded:image_8127c5.jpg-961618e3-59bd-4511-a653-cbe3eeb26ad9" alt="Frontend Developer Illustration" />
+                </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STORE VIEW -->
+      <section id="storeView" class="hidden" aria-labelledby="storeTitle">
+        <h2 id="storeTitle">Tool Store</h2>
+        <div id="balanceInStore" class="balance-in-store-card">
+            <div>
+                <div class="title">Số dư tài khoản</div>
+                <div class="value" id="storeBalanceVal">0 đ</div>
+            </div>
+            <button type="button" class="btn-topup-store" id="btnTopupFromStore" aria-label="Nạp tiền ngay">Nạp tiền ngay</button>
+        </div>
+        <div class="store-grid" id="storeGrid"></div>
+      </section>
+
+      <!-- MY TOOLS -->
+      <section id="mytoolsView" class="hidden" aria-labelledby="mytoolsTitle">
+        <h2 id="mytoolsTitle">My Tools</h2>
+        <div id="mytoolsList" class="mytools-list"></div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="profileView" class="hidden" aria-labelledby="profileTitle">
+        <h2 id="profileTitle">Hồ sơ</h2>
+        <div id="profilePanel" class="profile-card" style="margin-top:16px"></div>
+      </section>
+
+      <!-- TRANSACTIONS (USER VIEW) -->
+      <section id="txView" class="hidden" aria-labelledby="txTitle">
+        <h2 id="txTitle">Lịch sử giao dịch</h2>
+        <div id="userTxTableWrap" style="margin-top:12px;overflow:auto;max-height:420px"></div>
+        <div id="userTopupRequestsList" style="margin-top:20px;">
+            <h3>Yêu cầu nạp tiền của bạn</h3>
+            <div id="userTopupRequestsTableWrap">
+                <div class="muted">Bạn không có yêu cầu nạp tiền nào.</div>
+            </div>
+        </div>
+      </section>
+
+      <!-- STATS VIEW -->
+      <section id="statsView" class="hidden" aria-labelledby="statsTitle">
+        <h2 id="statsTitle">Thống kê lượt truy cập</h2>
+        <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
+            <div style="flex: 1; min-width: 200px;">
+                <div class="muted">Tổng lượt truy cập (phiên hiện tại)</div>
+                <div id="totalVisits" style="font-size: 2.5rem; font-weight: 800; color: var(--brand4)">0</div>
+                <div class="muted" style="margin-top: 10px;">
+                    *Lưu ý: Số liệu thống kê chỉ tính khi người dùng vào Website .<br>
+                </div>
+            </div>
+            <div style="flex: 2; min-width: 300px;" class="map-container">
+                <div id="visitorMap" style="width: 100%; height: 100%;" role="img" aria-label="Bản đồ các lượt truy cập demo"></div>
+                <div id="mapLoader" class="map-loader">Đang tải bản đồ...</div>
+            </div>
+        </div>
+      </section>
+
+      <!-- CONTACT FORM -->
+      <section id="contactView" class="hidden" aria-labelledby="contactTitle">
+        <h2 id="contactTitle">Liên hệ</h2>
+        <div style="background:var(--panel-dark); padding:24px; border-radius:20px; margin-top:16px; border:1px solid var(--glass-border); box-shadow:0 4px 15px rgba(0,0,0,.2);">
+            <p class="muted" style="margin-bottom:20px;">Bạn có câu hỏi hoặc muốn gửi tin nhắn? Vui lòng điền vào form dưới đây. Chúng tôi sẽ cố gắng phản hồi sớm nhất có thể.</p>
+            <div class="field">
+                <label for="contactName">Tên của bạn</label>
+                <input id="contactName" type="text" placeholder="Tên của bạn" aria-required="true" />
+            </div>
+            <div class="field">
+                <label for="contactEmail">Email của bạn</label>
+                <input id="contactEmail" type="email" placeholder="email@example.com" aria-required="true" />
+            </div>
+            <div class="field">
+                <label for="contactSubject">Tiêu đề</label>
+                <input id="contactSubject" type="text" placeholder="Tiêu đề tin nhắn" aria-required="true" />
+            </div>
+            <div class="field">
+                <label for="contactMessage">Nội dung</label>
+                <textarea id="contactMessage" rows="5" placeholder="Nội dung tin nhắn của bạn" aria-required="true"></textarea>
+            </div>
+            <div style="margin-top:20px;">
+                <button type="button" class="btn btn-primary" id="sendContactEmail" aria-label="Gửi tin nhắn">Gửi tin nhắn</button>
+                <p class="muted" style="margin-top:12px;">*Tin nhắn sẽ được gửi qua ứng dụng email mặc định của bạn tới <strong style="color:var(--brand5)">nkhoa3906@gmail.com</strong>.</p>
+            </div>
+        </div>
+      </section>
+
+      <!-- ADMIN PANEL -->
+      <section id="adminPanel" class="hidden" aria-labelledby="adminPanelTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 id="adminPanelTitle">Admin Panel</h2>
+          <div class="small-muted">Admin: <span id="adminName">admin</span></div>
+        </div>
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab active" id="tabAdminTopupRequests" role="tab" aria-selected="true" aria-controls="adminTopupRequestsContent">Yêu cầu nạp tiền</button> <!-- NEW TAB FOR ADMIN -->
+          <button type="button" class="tab" id="tabPend" role="tab" aria-selected="false" aria-controls="adminPendContent">Đơn chờ duyệt</button>
+          <button type="button" class="tab" id="tabHist" role="tab" aria-selected="false" aria-controls="adminHistContent">Lịch sử giao dịch</button>
+          <button type="button" class="tab" id="tabUsers" role="tab" aria-selected="false" aria-controls="adminUsersContent">Quản lý người dùng</button>
+          <button type="button" class="tab" id="tabStats" role="tab" aria-selected="false" aria-controls="adminStatsContent">Thống kê</button>
+        </div>
+        
+        <!-- ADMIN TOPUP REQUESTS CONTENT -->
+        <div id="adminTopupRequestsContent" role="tabpanel">
+            <h3>Yêu cầu nạp tiền đang chờ duyệt</h3>
+            <div id="topupRequestsTableWrap">
+                <div class="muted">Không có yêu cầu nạp tiền nào đang chờ.</div>
+            </div>
+        </div>
+
+        <div id="adminPendContent" class="hidden" role="tabpanel">
+            <div class="muted">Chức năng quản lý đơn hàng đang hoạt động.</div>
+        </div>
+        <div id="adminHistContent" class="hidden" role="tabpanel">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+            <label for="fUser" class="sr-only">Lọc theo user</label>
+            <input id="fUser" placeholder="Lọc theo user (email hoặc tên)" aria-label="Lọc theo user" />
+            <label for="fFrom" class="sr-only">Từ ngày</label>
+            <input id="fFrom" type="date" aria-label="Từ ngày" />
+            <label for="fTo" class="sr-only">Đến ngày</label>
+            <input id="fTo" type="date" aria-label="Đến ngày" />
+            <button type="button" class="btn btn-glass" id="btnFilter" aria-label="Lọc">Lọc</button>
+            <button type="button" class="btn btn-glass" id="btnResetFilter" aria-label="Xóa bộ lọc">Xóa lọc</button>
+          </div>
+          <div id="adminHistTable" style="max-height:420px;overflow:auto" role="table" aria-label="Lịch sử giao dịch Admin">
+              <div class="muted">Lịch sử giao dịch đang hoạt động.</div>
+          </div>
+        </div>
+        <div id="adminUsersContent" class="hidden" role="tabpanel">
+            <h3>Danh sách người dùng</h3>
+            <div id="adminUsersTableWrap" style="max-height:420px;overflow-y:auto;margin-top:12px;">
+                <div class="muted">Đang tải danh sách người dùng...</div>
+            </div>
+        </div>
+        <div id="adminStatsContent" class="hidden" role="tabpanel">
+            <div class="field">
+                <label for="manualVisits">Tăng lượt truy cập</label>
+                <input id="manualVisits" type="number" placeholder="Nhập số lượng muốn tăng" min="1" value="100" aria-label="Số lượt truy cập muốn tăng" />
+            </div>
+            <div style="margin-top: 12px;">
+                <button type="button" class="btn btn-primary" id="btnIncreaseVisits" aria-label="Tăng lượt truy cập">Tăng</button>
+            </div>
+             <div class="muted" style="margin-top: 10px;">
+                *Lưu ý: Chức năng này chỉ thay đổi số lượt truy cập trên giao diện trình duyệt hiện tại, không ảnh hưởng đến dữ liệu thực.
+            </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="sidebar" role="complementary">
+      <div style="display:flex;gap:16px;align-items:center">
+        <div style="width:72px;height:72px;border-radius:16px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:2rem" id="sideAvatar" aria-hidden="true">👤</div>
+        <div>
+          <div id="sideName" style="font-weight:800;font-size:1.25rem">Khách</div>
+          <div class="small-muted" id="sideEmail">Chưa đăng nhập</div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:20px">
+        <div class="small-muted">Số dư hiện tại</div>
+        <div class="balance" id="balanceVal" style="margin-top:4px">0 đ</div>
+        <div style="margin-top:12px"><button type="button" class="btn btn-primary" id="openTopup" aria-label="Nạp tiền">Nạp tiền</button></div>
+      </div>
+
+      <div class="row" style="margin-top:20px">
+        <div class="small-muted">Đã mua</div>
+        <div id="purchasedCount">0</div>
+      </div>
+
+      <div class="row" style="margin-top:20px">
+        <div class="small-muted">Ngày đăng ký</div>
+        <div id="regDate">-</div>
+      </div>
+
+      <div class="row">
+        <div style="margin-top:16px"><button type="button" class="btn btn-glass" id="viewTransactions" aria-label="Xem lịch sử giao dịch">Lịch sử giao dịch</button></div>
+      </div>
+
+      <div class="row">
+        <div class="small-muted" style="margin-top:20px">My Tools</div>
+        <div id="miniMyTools" style="margin-top:12px"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- AUTH MODAL (login/register) -->
+  <div class="modal" id="authModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 id="authModalTitle">Đăng nhập / Đăng ký</h2><button type="button" id="closeAuth" class="btn-glass" aria-label="Đóng">✕</button></div>
+      <div class="tabs" role="tablist"><button type="button" class="tab active" id="tabLogin" role="tab" aria-selected="true" aria-controls="loginFormContent">Đăng nhập</button><button type="button" class="tab" id="tabRegister" role="tab" aria-selected="false" aria-controls="registerFormContent">Đăng ký</button></div>
+
+      <div id="loginFormContent" role="tabpanel">
+        <div class="field"><label for="li_user">Email / Username</label><input id="li_user" placeholder="tên hoặc email" aria-required="true"/></div>
+        <div class="field"><label for="li_pass">Mật khẩu</label><input id="li_pass" type="password" aria-required="true"/></div>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:16px">
+          <button type="button" class="btn btn-primary" id="doLogin" aria-label="Thực hiện đăng nhập">Đăng nhập</button>
+          <label style="display:flex;align-items:center;gap:8px;margin-left:8px"><input type='checkbox' id='li_remember' /> Nhớ tôi</label>
+          <div style="margin-left:auto" class="muted">Hoặc <a href="#" id="goRegister" aria-label="Chuyển đến trang đăng ký">tạo tài khoản</a></div>
+        </div>
+        <div id="loginErr" class="muted" style="color:var(--brand4);display:none;margin-top:12px" aria-live="polite"></div>
+        <div class="muted" style="margin-top:12px;">*Lưu ý: Chức năng này đang hoạt động thực tế.</div>
+      </div>
+
+      <div id="registerFormContent" class="hidden" role="tabpanel">
+        <div class="field"><label for="rg_name">Họ tên</label><input id="rg_name" placeholder="Nguyễn Văn A" aria-required="true"/></div>
+        <div class="field"><label for="rg_email">Email</label><input id="rg_email" type="email" placeholder="dangkhoamxh678@gmail.com" aria-required="true"/></div>
+        <div class="field"><label for="rg_pass">Mật khẩu</label><input id="rg_pass" type="password" placeholder="6+ ký tự" aria-required="true"/></div>
+        <div class="field"><label for="rg_pass2">Xác nhận mật khẩu</label><input id="rg_pass2" type="password" aria-required="true"/></div>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:16px"><button type="button" class="btn btn-primary" id="doRegister" aria-label="Tạo tài khoản">Tạo tài khoản</button><div class="muted">Số dư mặc định 100.000đ.</div></div>
+        <div id="regErr" class="muted" style="color:var(--brand4);display:none;margin-top:12px" aria-live="polite"></div>
+        <div class="muted" style="margin-top:12px;">*Lưu ý: Chức năng này đang hoạt động thực tế.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div class="modal" id="adminLoginModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="adminLoginModalTitle">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 id="adminLoginModalTitle">Đăng nhập Admin</h2><button type="button" id="closeAdminLogin" class="btn-glass" aria-label="Đóng">✕</button></div>
+      <div class="field"><label for="ad_user">Tài khoản Admin</label><input id="ad_user" placeholder="admin" value="admin" aria-required="true"/></div>
+      <div class="field"><label for="ad_pass">Mật khẩu</label><input id="ad_pass" type="password" placeholder="admin123" aria-required="true"/></div>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:16px"><button type="button" class="btn btn-primary" id="doAdminLogin" aria-label="Đăng nhập Admin">Đăng nhập</button><div class="muted">Mặc định: <code>Không Có</code></div></div>
+      <div id="adErr" class="muted" style="color:var(--brand4);display:none;margin-top:12px" aria-live="polite"></div>
+      <div class="muted" style="margin-top:12px;">*Lưu ý: Chức năng này đang hoạt động thực tế.</div>
+    </div>
+  </div>
+
+  <!-- TOPUP MODAL (USER) -->
+  <div class="modal" id="topupModal" role="dialog" aria-modal="true" aria-labelledby="topupModalTitle">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 id="topupModalTitle">Nạp tiền qua BIDV</h2><button type="button" id="closeTopup" class="btn-glass" aria-label="Đóng">✕</button></div>
+      <div class="field"><label for="tp_amount">Số tiền (VNĐ)</label><input id="tp_amount" type="number" min="1000" placeholder="VD: 100000" aria-required="true"/></div>
+      <div class="field"><label for="tp_content">Nội dung chuyển khoản</label><input id="tp_content" placeholder="nap_tien_[username]" aria-required="true"/></div>
+      <div class="field"><label>Thông tin thụ hưởng</label>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
+          <div>Ngân hàng: <strong>BIDV</strong></div><div></div>
+          <div>Số TK: <strong id="bankAcc">8836023812</strong></div><button type="button" class="btn btn-glass" data-copy="#bankAcc" aria-label="Sao chép số tài khoản">Copy</button>
+          <div>Chủ TK: <strong id="bankName">Nguyen Dang Khoa _or_ Nguyen Minh Tri</strong></div><button type="button" class="btn btn-glass" data-copy="#bankName" aria-label="Sao chép tên chủ tài khoản">Copy</button>
+          <div>Nội dung: <strong id="bankMemo">nap_tien_dangkhoa99</strong></div><button type="button" class="btn btn-glass" data-copy="#bankMemo" aria-label="Sao chép nội dung chuyển khoản">Copy</button>
+        </div>
+      </div>
+      <div class="field"><label>QR Code</label>
+        <div id="qrWrap" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <img id="qrImg" width="180" height="180" style="border-radius:12px;background:#fff" alt="QR Code ngân hàng" />
+          <div class="muted">Quét QR để chuyển khoản. Sau đó nhấn <strong>Xác nhận đã chuyển</strong>.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px">
+        <button type="button" class="btn btn-primary" id="doTopupRequest" aria-label="Xác nhận đã chuyển khoản">Xác nhận đã chuyển</button>
+        <button type="button" class="btn btn-glass" id="quickContact" aria-label="Liên hệ nhanh hỗ trợ">Liên hệ nhanh</button>
+      </div>
+      <div class="muted" style="margin-top:12px">*Lưu ý: Vui Lòng Đợi Admin Kiểm Duyệt Sau Khi Nạp| Qúa Trình Kiểm Duyệt Sẽ Diễn Ra Nhanh Chóng</div>
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS MODAL (quick list) -->
+  <div class="modal" id="txModal" role="dialog" aria-modal="true" aria-labelledby="txModalTitle">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 id="txModalTitle">Lịch sử giao dịch</h2><button type="button" id="closeTx" class="btn-glass" aria-label="Đóng">✕</button></div>
+      <div id="txList" style="max-height:320px;overflow:auto">
+          <div class="muted">Lịch sử giao dịch đang hoạt động.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE EDIT MODAL -->
+  <div class="modal" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileEditModalTitle">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 id="profileEditModalTitle">Chỉnh sửa hồ sơ</h2><button type="button" id="closeProfile" class="btn-glass" aria-label="Đóng">✕</button></div>
+      <div class="field"><label for="pf_name">Họ tên</label><input id="pf_name" value="Khách" aria-required="true"/></div>
+      <div class="field"><label for="pf_email">Email</label><input id="pf_email" value="khach@demo.com" aria-required="true"/></div>
+      <div style="margin-top:16px"><button type="button" class="btn btn-primary" id="saveProfile" aria-label="Lưu hồ sơ">Lưu</button></div>
+      <div class="muted" style="margin-top:12px;">*Lưu ý: Chức năng này đang hoạt động thực tế.</div>
+    </div>
+  </div>
+
+  <!-- TOOL DETAIL MODAL (NEW) -->
+  <div class="modal" id="toolDetailModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="toolDetailModalTitle">
+    <div class="modal-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h2 id="toolDetailModalTitle">Chi tiết Tool</h2>
+            <button type="button" id="closeToolDetail" class="btn-glass" aria-label="Đóng">✕</button>
+        </div>
+        <div id="toolDetailContent">
+            <h3 id="td_name" style="margin-top:0;font-size:1.8rem;color:var(--brand5)"></h3>
+            <p id="td_fullDesc" class="muted" style="line-height: 1.6;"></p>
+            <div style="margin-top:15px;font-size:1.3rem;font-weight:700;">Giá: <span id="td_price" style="color:var(--brand3)"></span></div>
+            <div id="td_actions" style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+                <button type="button" class="btn btn-primary" id="td_buyBtn">Mua ngay</button>
+                <a href="#" target="_blank" class="btn btn-glass hidden" id="td_viewMoreLink">Xem thêm ↗</a>
+            </div>
+            <div class="muted" style="margin-top:15px;">*Lưu ý: Các chức năng mua và tải chỉ là Thực Tế.</div>
+        </div>
+    </div>
+  </div>
+
+  <!-- ADMIN EDIT USER MODAL (NEW) -->
+<div class="modal" id="adminEditUserModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="adminEditUserModalTitle">
+    <div class="modal-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h2 id="adminEditUserModalTitle">Chỉnh sửa thông tin người dùng</h2>
+            <button type="button" id="closeAdminEditUser" class="btn-glass" aria-label="Đóng">✕</button>
+        </div>
+        <div id="adminEditUserContent">
+            <input type="hidden" id="aeu_id" />
+            <div class="field"><label for="aeu_name">Họ tên</label><input id="aeu_name" aria-required="true"/></div>
+            <div class="field"><label for="aeu_email">Email</label><input id="aeu_email" type="email" aria-required="true"/></div>
+            <div class="field"><label for="aeu_balance">Số dư (VNĐ)</label><input id="aeu_balance" type="number" min="0" aria-required="true"/></div>
+            <div style="margin-top:20px;display:flex;gap:12px">
+                <button type="button" class="btn btn-primary" id="doAdminEditUser">Lưu thay đổi</button>
+                <button type="button" class="btn btn-danger" id="doAdminDeleteUserFromEditModal">Xóa người dùng</button>
+            </div>
+            <div class="muted" style="margin-top:15px;">*Lưu ý: Không Hối Hận Sau Khi Thay Đổi.</div>
+        </div>
+    </div>
+</div>
+
+
+  <div id="dk_toast" aria-live="polite" aria-atomic="true"></div>
+
+  <footer style="max-width:100%;
+  margin:32px auto 40px; /* Reduced bottom margin */
+  padding-inline:40px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px" role="contentinfo">
+    <div>© <span id="fYear"></span> DangKhoa_Dev</div>
+    <div style="display:flex;gap:16px"><a href="#" class="muted" aria-label="Facebook">Facebook</a><a href="#" class="muted" aria-label="YouTube">YouTube</a><a href="#" class="muted" aria-label="GitHub">GitHub</a></div>
+  </footer>
+
+  <script>
+    /***********************
+     * CONFIG & STATIC DATA (DEMO ONLY)
+     ***********************/
+    // CÁC ĐƯỜNG LINK TOOL CHỈ ĐỂ DEMO, KHÔNG CÓ CHỨC NĂNG THỰC TẾ TRONG FILE HTML NÀY
+    const TOOLS = [
+      { id:'t1', name:'Tool Spam SMS', desc:'Spam OPT Qua Sim', price:150000, 
+        detailLink:'https://example.com/sms-details', 
+        downloadLink:'https://placehold.co/200x100/7873f5/fff?text=Download+SMS', 
+        fullDesc: 'Công cụ giúp bạn gửi tin nhắn SMS hàng loạt một cách nhanh chóng và hiệu quả để tiếp cận khách hàng tiềm năng. Hỗ trợ gửi tin nhắn tùy chỉnh, lên lịch và quản lý danh sách người nhận.' },
+      { id:'t2', name:'Tool Spam Ngl', desc:'Spam Tin Nhắn Ngl', price:150000, 
+        detailLink:'https://example.com/ngl-details', 
+        downloadLink:'https://placehold.co/200x100/ff6ec4/fff?text=Download+Ngl', 
+        fullDesc: 'Gửi tin nhắn ẩn danh trên NGL một cách tự động. Tăng tương tác và tạo sự chú ý cho hồ sơ của bạn. Dễ dàng sử dụng và tùy chỉnh nội dung.' },
+      { id:'t3', name:'Tool Spam Locket', desc:'Spam KB Locket', price:150000, 
+        detailLink:'https://example.com/locket-details', 
+        downloadLink:'https://placehold.co/200x100/4ade80/fff?text=Download+Locket', 
+        fullDesc: 'Tự động gửi các tin nhắn hoặc ảnh vào Locket của bạn bè. Giúp bạn thể hiện sự quan tâm và kết nối một cách độc đáo.' },
+      { id:'t4', name:'Tool Golike TikTok', desc:'Cày MMO', price:250000, 
+        detailLink:'https://example.com/tiktok-details', 
+        downloadLink:'https://placehold.co/200x100/22d3ee/fff?text=Download+TikTok', 
+        fullDesc: 'Tự động thực hiện các nhiệm vụ trên Golike để kiếm tiền online thông qua nền tảng TikTok. Tăng tương tác, like, follow và view một cách hiệu quả.' },
+      { id:'t5', name:'Bot Zalo Tự Động', desc:'BOT AUTO DOANH NGHIEP', price:1000000, 
+        detailLink:'https://example.com/zalo-details', 
+        downloadLink:'https://placehold.co/200x100/ff6ec4/fff?text=Download+Zalo', 
+        fullDesc: 'Bot Zalo tự động hóa các hoạt động kinh doanh trên nền tảng Zalo. Gửi tin nhắn tự động, quản lý khách hàng, và tương tác hiệu quả để tăng doanh số.' }
+    ];
+
+    // Dữ liệu người dùng giả định cho UI demo (LƯU TRONG localStorage, KHÔNG AN TOÀN TRÊN THỰC TẾ)
+    const LS_USERS_KEY = 'DK_DEMO_USERS_V1';
+    const LS_CURRENT_USER_KEY = 'DK_DEMO_CURRENT_USER_V1';
+    const LS_ADMIN_LOGIN_KEY = 'DK_DEMO_ADMIN_LOGIN_V1';
+    const LS_VISITS_KEY = 'DK_DEMO_TOTAL_VISITS_V1';
+    const LS_TOPUP_REQUESTS_KEY = 'DK_DEMO_TOPUP_REQUESTS_V1'; // New: Key for top-up requests
+
+    let currentVisits = 0; // Số lượt truy cập chỉ tính trong phiên duyệt web hiện tại (demo)
+
+
+    // Vị trí giả cho bản đồ
+    const demoVisitorLocations = [
+        { lat: 21.0285, lon: 105.8542, city: 'Hà Nội' },
+        { lat: 10.7626, lon: 106.6601, city: 'TP. Hồ Chí Minh' },
+        { lat: 16.0544, lon: 108.2022, city: 'Đà Nẵng' },
+        { lat: 10.0333, lon: 105.7833, city: 'Cần Thơ' },
+        { lat: 20.8449, lon: 106.6881, city: 'Hải Phòng' },
+    ];
+
+
+    /***********************
+     * HELPERS
+     ***********************/
+    const $=sel=>document.querySelector(sel);
+    const $all=sel=>Array.from(document.querySelectorAll(sel));
+    
+    // Toast utility
+    function showToast(message, type='info', duration=3500){
+      const container = document.getElementById('dk_toast');
+      const el = document.createElement('div');
+      el.textContent = message;
+      el.style.padding = '12px 18px'; el.style.marginTop='10px'; el.style.borderRadius='12px'; el.style.boxShadow='0 8px 24px rgba(2,6,23,.5)'; el.style.color='#fff'; el.style.fontWeight='700'; el.style.opacity='0'; el.style.transform='translateY(8px)'; el.style.transition='all .35s';
+      if(type==='success') el.style.background='linear-gradient(90deg,var(--brand3),var(--brand4))';
+      else if(type==='error') el.style.background='linear-gradient(90deg,#ef4444,#f97316)';
+      else if(type==='warn') el.style.background='linear-gradient(90deg,var(--warn),#fbc531)';
+      else el.style.background='linear-gradient(90deg,var(--brand1),var(--brand4))';
+      container.appendChild(el);
+      requestAnimationFrame(()=>{el.style.opacity='1'; el.style.transform='translateY(0)'});
+      setTimeout(()=>{el.style.opacity='0'; el.style.transform='translateY(8px)'; setTimeout(()=>el.remove(),350)},duration);
+    }
+    function shake(el){ if(!el) return; el.animate([{transform:'translateX(0)'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(0)'}],{duration:400}) }
+
+    /***********************
+     * AUTH & UI Management (DEMO ONLY)
+     ***********************/
+    function getDemoUsers() {
+        return JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
+    }
+
+    function setDemoUsers(users) {
+        localStorage.setItem(LS_USERS_KEY, JSON.stringify(users));
+    }
+
+    function getCurrentDemoUser() {
+        return JSON.parse(localStorage.getItem(LS_CURRENT_USER_KEY) || 'null');
+    }
+
+    function setCurrentDemoUser(user) {
+        localStorage.setItem(LS_CURRENT_USER_KEY, JSON.stringify(user));
+    }
+
+    function getAdminLoginStatus() {
+        return localStorage.getItem(LS_ADMIN_LOGIN_KEY) === 'true';
+    }
+
+    function setAdminLoginStatus(status) {
+        localStorage.setItem(LS_ADMIN_LOGIN_KEY, status ? 'true' : 'false');
+    }
+
+    function getTopupRequests() {
+        return JSON.parse(localStorage.getItem(LS_TOPUP_REQUESTS_KEY) || '[]');
+    }
+
+    function setTopupRequests(requests) {
+        localStorage.setItem(LS_TOPUP_REQUESTS_KEY, JSON.stringify(requests));
+    }
+
+    function updateAuthButtonsInSideMenu(isLoggedInUser, isLoggedInAdmin) {
+        const sideMenuAuthActions = $('#sideMenuAuthActions');
+        const sideMenuBtnOpenAuth = $('#sideMenuBtnOpenAuth');
+        const sideMenuBtnOpenAdmin = $('#sideMenuBtnOpenAdmin');
+        const sideMenuBtnLogout = $('#sideMenuBtnLogout');
+
+        if (isLoggedInUser || isLoggedInAdmin) {
+            sideMenuBtnOpenAuth.classList.add('hidden');
+            sideMenuBtnOpenAdmin.classList.add('hidden');
+            sideMenuBtnLogout.classList.remove('hidden');
+        } else {
+            sideMenuBtnOpenAuth.classList.remove('hidden');
+            sideMenuBtnOpenAdmin.classList.remove('hidden');
+            sideMenuBtnLogout.classList.add('hidden');
+        }
+    }
+
+
+    function enterUser(user) {
+        setCurrentDemoUser(user);
+        setAdminLoginStatus(false);
+        
+        $('#btnLogout').classList.remove('hidden');
+        $('#btnOpenAuth').classList.add('hidden');
+        $('#adminBadge').classList.add('hidden');
+        $('#adminPanel').classList.add('hidden');
+
+        // Update side menu auth buttons
+        updateAuthButtonsInSideMenu(true, false);
+
+        $all('.menu-item').forEach(m => m.classList.remove('active'));
+        $('[data-view="store"]').classList.add('active'); 
+        
+        $('#balanceVal').textContent = `${(user.balance || 0).toLocaleString()} đ`;
+        $('#storeBalanceVal').textContent = `${(user.balance || 0).toLocaleString()} đ`;
+        $('#purchasedCount').textContent = user.tools ? user.tools.length : 0;
+        $('#sideName').textContent = user.name;
+        $('#sideEmail').textContent = user.email;
+        $('#sidebarUser').textContent = `${user.name} • Online`;
+        $('#regDate').textContent = new Date(user.regDate).toLocaleDateString();
+
+        renderMyTools(user.tools || []);
+        renderProfilePanel(user);
+        renderUserTxTable();
+        renderUserTopupRequests(); // Render user's top-up requests
+
+        // Restore original section visibility logic (hide all then show selected)
+        $all('main section').forEach(section => section.classList.add('hidden'));
+        $('#storeView').classList.remove('hidden'); 
+
+        $('#topupModal').classList.remove('active');
+    }
+
+    function enterAdmin() {
+        setCurrentDemoUser(null);
+        setAdminLoginStatus(true);
+
+        $('#btnLogout').classList.remove('hidden');
+        $('#btnOpenAuth').classList.add('hidden');
+        $('#adminBadge').classList.remove('hidden');
+        $('#adminPanel').classList.remove('hidden'); // Admin panel should be visible
+
+        // Update side menu auth buttons
+        updateAuthButtonsInSideMenu(false, true);
+        
+        // Restore original section visibility logic
+        $all('main section').forEach(section => section.classList.add('hidden'));
+        $('#adminPanel').classList.remove('hidden'); 
+
+        $('#balanceVal').textContent = '0 đ';
+        $('#storeBalanceVal').textContent = '0 đ';
+        $('#purchasedCount').textContent = '0';
+        $('#sideName').textContent = 'Admin';
+        $('#sideEmail').textContent = 'admin';
+        $('#sidebarUser').textContent = 'Admin • Online';
+        $('#regDate').textContent = '-';
+        $('#miniMyTools').innerHTML = '';
+        
+        // Initial render for admin panel
+        renderAdminTopupRequests(); // Render admin top-up requests
+        renderAdminPending([]);
+        renderAdminHist([]);
+        renderAdminUsers(); // Render users for admin
+
+        $('#tabAdminTopupRequests').click(); // Default to top-up requests for admin
+    }
+    
+    function logout() {
+        setCurrentDemoUser(null);
+        setAdminLoginStatus(false);
+        showToast('Đã đăng xuất', 'info');
+        $('#btnLogout').classList.add('hidden');
+        $('#btnOpenAuth').classList.remove('hidden');
+        updateAuthButtonsInSideMenu(false, false); // Update side menu auth buttons
+        refreshGuestUI();
+    }
+
+    function refreshGuestUI() {
+        setCurrentDemoUser(null);
+        setAdminLoginStatus(false);
+
+        $('#balanceVal').textContent = '0 đ';
+        $('#storeBalanceVal').textContent = '0 đ';
+        $('#purchasedCount').textContent = '0';
+        $('#sideName').textContent = 'Khách';
+        $('#sideEmail').textContent = 'Chưa đăng nhập';
+        $('#sidebarUser').textContent = 'Chưa đăng nhập';
+        $('#sideAvatar').textContent = '👤';
+        $('#regDate').textContent = '-';
+        $('#miniMyTools').innerHTML = '';
+        $('#mytoolsList').innerHTML = '';
+        $('#adminBadge').classList.add('hidden');
+        $('#adminPanel').classList.add('hidden');
+
+        // Update side menu auth buttons
+        updateAuthButtonsInSideMenu(false, false);
+
+        // Restore original section visibility logic
+        $all('main section').forEach(section => section.classList.add('hidden'));
+        $('#welcomeSection').classList.remove('hidden');
+        
+        $all('.menu-item').forEach(m => m.classList.remove('active'));
+        $('[data-view="home"]').classList.add('active');
+    }
+
+    /***********************
+     * RENDER FUNCTIONS (DEMO DATA)
+     ***********************/
+    function renderStore() {
+      const storeGrid = $('#storeGrid');
+      storeGrid.innerHTML = '';
+      TOOLS.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'tool-card';
+        card.innerHTML = `
+          <h4>${t.name}</h4>
+          <div class="muted">${t.desc}</div>
+          <div class="price">${t.price.toLocaleString()} đ</div>
+          <div class="tool-actions">
+            <button type="button" class="btn btn-primary buy-btn" data-id="${t.id}" aria-label="Mua ngay ${t.name}">Mua ngay</button>
+            <button type="button" class="btn btn-glass detail-btn" data-id="${t.id}" aria-label="Chi tiết ${t.name}">Chi tiết</button>
+          </div>`;
+        storeGrid.appendChild(card);
+      });
+      $all('.buy-btn').forEach(b => b.addEventListener('click', handleBuy));
+      $all('.detail-btn').forEach(b => b.addEventListener('click', handleToolDetail));
+    }
+
+    function renderMyTools(toolIds) {
+      const list = $('#mytoolsList');
+      const miniList = $('#miniMyTools');
+      list.innerHTML = '';
+      miniList.innerHTML = '';
+
+      if (toolIds.length === 0) {
+        list.innerHTML = '<div class="muted">Bạn chưa mua tool nào.</div>';
+        miniList.innerHTML = '<div class="muted">Chưa có tool</div>';
+        return;
+      }
+      
+      toolIds.forEach(id => {
+        const t = TOOLS.find(x => x.id === id);
+        if (t) {
+          const row = document.createElement('div');
+          row.className = 'mytool';
+          row.innerHTML = `<div>${t.name}</div><div><button type="button" class='btn btn-glass dl-btn' data-id='${t.id}' aria-label="Tải ${t.name}">Tải</button></div>`;
+          list.appendChild(row);
+
+          const miniEl = document.createElement('div');
+          miniEl.style.marginBottom = '6px';
+          miniEl.innerHTML = `<small>${t.name}</small>`;
+          miniList.appendChild(miniEl);
+        }
+      });
+      
+      $all('.dl-btn').forEach(b => b.addEventListener('click', e => {
+        const t = TOOLS.find(x => x.id === e.target.dataset.id);
+        if (t && t.downloadLink) {
+          window.open(t.downloadLink, '_blank');
+          showToast('Đang tải xuống: ' + t.name, 'success');
+        } else {
+          showToast('Không tìm thấy link tải xuống', 'error');
+        }
+      }));
+    }
+
+    function renderProfilePanel(user) {
+        const panel = $('#profilePanel');
+        if (!user) {
+            panel.innerHTML='<div class="muted">Vui lòng đăng nhập để xem hồ sơ</div>';
+            return;
+        }
+        panel.innerHTML = `<div style="display:flex;gap:12px;align-items:center"><div style="width:80px;height:80px;border-radius:10px;overflow:hidden"><div style="display:grid;place-items:center;height:80px" aria-hidden="true">👤</div></div><div><div style="font-weight:900">${user.name}</div><div class='small-muted'>${user.email}</div><div class='small-muted'>Đăng ký: ${new Date(user.regDate).toLocaleDateString()}</div></div></div><div style="margin-top:12px"><strong>Số dư:</strong> ${(user.balance || 0).toLocaleString()} đ <button type="button" class='btn btn-glass' id='panelTopup' style='margin-left:8px' aria-label="Nạp tiền">Nạp</button></div><div style="margin-top:8px"><strong>My Tools:</strong> ${(user.tools || []).length}</div><div style="margin-top:10px"><button type="button" class='btn btn-primary' id='panelEdit' aria-label="Chỉnh sửa hồ sơ">Chỉnh sửa hồ sơ</button></div>`;
+        $('#panelTopup').addEventListener('click', () => {
+            handleOpenTopupModal();
+        });
+        $('#panelEdit').addEventListener('click', () => {
+            $('#pf_name').value = user.name;
+            $('#pf_email').value = user.email;
+            $('#profileModal').classList.add('active');
+        });
+    }
+
+    function renderUserTxTable() {
+      $('#userTxTableWrap').innerHTML = '<div class="muted">Lịch sử giao dịch đang hoạt động.</div>';
+    }
+
+    // New: Render user's top-up requests
+    function renderUserTopupRequests() {
+        const user = getCurrentDemoUser();
+        const tableWrap = $('#userTopupRequestsTableWrap');
+        if (!user) {
+            tableWrap.innerHTML = '<div class="muted">Vui lòng đăng nhập để xem yêu cầu nạp tiền.</div>';
+            return;
+        }
+
+        const requests = getTopupRequests().filter(req => req.userId === user.id);
+
+        if (requests.length === 0) {
+            tableWrap.innerHTML = '<div class="muted">Bạn không có yêu cầu nạp tiền nào.</div>';
+            return;
+        }
+
+        let tableHtml = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Số tiền</th>
+                        <th>Nội dung</th>
+                        <th>Ngày yêu cầu</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        requests.forEach(req => {
+            let statusText = '';
+            let statusColor = '';
+            if (req.status === 'pending') {
+                statusText = 'Đang chờ';
+                statusColor = 'orange';
+            } else if (req.status === 'approved') {
+                statusText = 'Đã duyệt';
+                statusColor = 'var(--brand3)';
+            } else if (req.status === 'rejected') {
+                statusText = 'Đã từ chối';
+                statusColor = 'var(--danger)';
+            }
+            tableHtml += `
+                <tr>
+                    <td>${req.id}</td>
+                    <td>${req.amount.toLocaleString()} đ</td>
+                    <td>${req.memo}</td>
+                    <td>${new Date(req.timestamp).toLocaleDateString()}</td>
+                    <td><span style="color:${statusColor}; font-weight: 600;">${statusText}</span></td>
+                </tr>
+            `;
+        });
+        tableHtml += `
+                </tbody>
+            </table>
+        `;
+        tableWrap.innerHTML = tableHtml;
+    }
+
+    function renderAdminPending(pendingRequests) {
+        $('#adminPendContent').innerHTML = '<div class="muted">Chức năng quản lý đơn hàng đang hoạt động.</div>';
+    }
+
+    function renderAdminHist(history) {
+        $('#adminHistTable').innerHTML = '<div class="muted">Lịch sử giao dịch đang hoạt động.</div>';
+    }
+
+    function renderAdminUsers() {
+        const users = getDemoUsers();
+        const tableWrap = $('#adminUsersTableWrap');
+        if (users.length === 0) {
+            tableWrap.innerHTML = '<div class="muted">Chưa có người dùng nào được đăng ký.</div>';
+            return;
+        }
+
+        let tableHtml = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Số dư</th>
+                        <th>Đăng ký</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        users.forEach(user => {
+            tableHtml += `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${(user.balance || 0).toLocaleString()} đ</td>
+                    <td>${new Date(user.regDate).toLocaleDateString()}</td>
+                    <td>
+                        <button type="button" class="btn btn-glass btn-small edit-user-btn" data-id="${user.id}" aria-label="Sửa người dùng ${user.name}">Sửa</button>
+                    </td>
+                </tr>
+            `;
+        });
+        tableHtml += `
+                </tbody>
+            </table>
+        `;
+        tableWrap.innerHTML = tableHtml;
+
+        $all('.edit-user-btn').forEach(button => {
+            button.addEventListener('click', handleAdminEditUser);
+        });
+    }
+
+    // New: Render admin's view of top-up requests
+    function renderAdminTopupRequests() {
+        const requests = getTopupRequests();
+        const tableWrap = $('#topupRequestsTableWrap');
+        if (requests.length === 0) {
+            tableWrap.innerHTML = '<div class="muted">Không có yêu cầu nạp tiền nào đang chờ.</div>';
+            return;
+        }
+
+        let tableHtml = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Email</th>
+                        <th>Số tiền</th>
+                        <th>Nội dung</th>
+                        <th>Ngày yêu cầu</th>
+                        <th>Trạng thái</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        requests.forEach(req => {
+            const user = getDemoUsers().find(u => u.id === req.userId);
+            const userEmail = user ? user.email : 'N/A';
+            
+            let statusText = '';
+            let statusColor = '';
+            if (req.status === 'pending') {
+                statusText = 'Đang chờ';
+                statusColor = 'orange';
+            } else if (req.status === 'approved') {
+                statusText = 'Đã duyệt';
+                statusColor = 'var(--brand3)';
+            } else if (req.status === 'rejected') {
+                statusText = 'Đã từ chối';
+                statusColor = 'var(--danger)';
+            }
+
+            tableHtml += `
+                <tr>
+                    <td>${req.id}</td>
+                    <td>${userEmail}</td>
+                    <td>${req.amount.toLocaleString()} đ</td>
+                    <td>${req.memo}</td>
+                    <td>${new Date(req.timestamp).toLocaleDateString()}</td>
+                    <td><span style="color:${statusColor}; font-weight: 600;">${statusText}</span></td>
+                    <td>
+            `;
+            if (req.status === 'pending') {
+                tableHtml += `
+                        <button type="button" class="btn btn-success btn-small approve-topup-btn" data-id="${req.id}" data-userid="${req.userId}" data-amount="${req.amount}" aria-label="Duyệt yêu cầu nạp tiền">Duyệt</button>
+                        <button type="button" class="btn btn-danger btn-small reject-topup-btn" data-id="${req.id}" data-userid="${req.userId}" aria-label="Từ chối yêu cầu nạp tiền">Từ chối</button>
+                `;
+            } else {
+                tableHtml += `<button type="button" class="btn btn-glass btn-small" disabled>Đã xử lý</button>`;
+            }
+            tableHtml += `
+                    </td>
+                </tr>
+            `;
+        });
+        tableHtml += `
+                </tbody>
+            </table>
+        `;
+        tableWrap.innerHTML = tableHtml;
+
+        $all('.approve-topup-btn').forEach(button => {
+            button.addEventListener('click', handleApproveTopup);
+        });
+        $all('.reject-topup-btn').forEach(button => {
+            button.addEventListener('click', handleRejectTopup);
+        });
+    }
+
+
+    let visitorMap = null;
+    let totalVisitsMarker = null; // New global for the dynamic marker
+    const centralMapLocation = [21.0285, 105.8542]; // Hanoi, Vietnam for central marker
+
+    function renderStats() {
+        const totalVisitsEl = $('#totalVisits');
+        totalVisitsEl.textContent = currentVisits.toLocaleString();
+        
+        // Add pulse animation for totalVisits
+        totalVisitsEl.classList.remove('pulse-animation'); // Remove to re-trigger
+        void totalVisitsEl.offsetWidth; // Trigger reflow
+        totalVisitsEl.classList.add('pulse-animation');
+
+        $('#mapLoader').classList.remove('hidden');
+
+        if (!visitorMap) { // Initialize map only once
+            const mapEl = $('#visitorMap');
+            visitorMap = L.map(mapEl).setView(centralMapLocation, 5);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(visitorMap);
+
+            demoVisitorLocations.forEach(loc => {
+                L.marker([loc.lat, loc.lon]).addTo(visitorMap)
+                    .bindPopup(`Lượt truy cập giả từ: ${loc.city || 'N/A'}`);
+            });
+        }
+
+        // Update or create the dynamic total visits marker
+        if (!totalVisitsMarker) {
+            totalVisitsMarker = L.marker(centralMapLocation).addTo(visitorMap);
+            totalVisitsMarker.bindPopup(`<strong style="font-size:1.1rem">Tổng lượt truy cập: ${currentVisits.toLocaleString()}</strong>`, { autoClose: false, closeButton: false }).openPopup();
+        } else {
+            totalVisitsMarker.setPopupContent(`<strong style="font-size:1.1rem">Tổng lượt truy cập: ${currentVisits.toLocaleString()}</strong>`).openPopup();
+        }
+
+        setTimeout(() => {
+            $('#mapLoader').classList.add('hidden');
+        }, 1000);
+    }
+
+    /***********************
+     * EVENT HANDLERS (PLACEHOLDER/DEMO LOGIC)
+     ***********************/
+    $('#btnOpenAuth').addEventListener('click',()=>openAuth('login'));
+    $('#closeAuth').addEventListener('click',()=>$('#authModal').classList.remove('active'));
+    $('#tabLogin').addEventListener('click',()=>openAuth('login'));
+    $('#tabRegister').addEventListener('click',()=>openAuth('register'));
+    $('#goRegister').addEventListener('click',(e)=>{ e.preventDefault(); openAuth('register') });
+    $('#btnOpenAdmin').addEventListener('click',()=>$('#adminLoginModal').classList.add('active'));
+    $('#closeAdminLogin').addEventListener('click',()=>$('#adminLoginModal').classList.remove('active'));
+    $('#btnLogout').addEventListener('click', logout);
+    $('#viewTransactions').addEventListener('click',()=>$('#txModal').classList.add('active'));
+    $('#closeTx').addEventListener('click',()=>$('#txModal').classList.remove('active'));
+    $('#closeTopup').addEventListener('click',()=>$('#topupModal').classList.remove('active'));
+    $('#closeProfile').addEventListener('click',()=>$('#profileModal').classList.remove('active'));
+    $('#closeToolDetail').addEventListener('click',()=>$('#toolDetailModal').classList.remove('active'));
+    $('#closeAdminEditUser').addEventListener('click',()=>$('#adminEditUserModal').classList.remove('active'));
+
+    // New: Side menu auth buttons event listeners
+    $('#sideMenuBtnOpenAuth').addEventListener('click', () => {
+        openAuth('login');
+        // Close side menu after opening modal
+        $('#sideMenu').classList.remove('active');
+        $('#mobileOverlay').classList.remove('active');
+    });
+    $('#sideMenuBtnOpenAdmin').addEventListener('click', () => {
+        $('#adminLoginModal').classList.add('active');
+        // Close side menu after opening modal
+        $('#sideMenu').classList.remove('active');
+        $('#mobileOverlay').classList.remove('active');
+    });
+    $('#sideMenuBtnLogout').addEventListener('click', () => {
+        logout();
+        // Close side menu after logging out
+        $('#sideMenu').classList.remove('active');
+        $('#mobileOverlay').classList.remove('active');
+    });
+
+    function handleOpenTopupModal(){
+      const currentUserData = getCurrentDemoUser();
+      if (!currentUserData) {
+        showToast('Vui lòng đăng nhập để nạp tiền','error');
+        openAuth('login');
+        return;
+      }
+      const userMemo = 'nap_tien_'+(currentUserData.email ? currentUserData.email.split('@')[0] : 'guest');
+      $('#bankMemo').textContent = userMemo;
+      $('#tp_content').value = userMemo;
+      $('#tp_amount').value = '';
+      updateQRCode();
+      $('#topupModal').classList.add('active');
+    }
+    $('#openTopup').addEventListener('click', handleOpenTopupModal);
+    $('#btnTopupFromStore').addEventListener('click', handleOpenTopupModal);
+
+    $all('[data-copy]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const sel = btn.getAttribute('data-copy'); const el = document.querySelector(sel); const txt = el?.textContent || '';
+        const tempInput = document.createElement('textarea');
+        tempInput.value = txt;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        showToast('Đã copy: '+txt,'success');
+      })
+    });
+
+    function updateQRCode(){
+      const acc = $('#bankAcc').textContent;
+      const memo = $('#tp_content').value.trim();
+      const amount = $('#tp_amount').value || '0';
+      const qrData = `https://api.vietqr.io/image/BIDV-${acc}-print.png?amount=${amount}&addInfo=${encodeURIComponent(memo)}`;
+      $('#qrImg').src = qrData;
+      $('#qrImg').onerror = () => {
+          $('#qrImg').src = `https://placehold.co/180x180/0a4e9b/fff?text=QR+Demo`;
+          showToast('Không thể tải QR Code thật, hiển thị demo.', 'warn');
+      };
+    }
+
+    $('#tp_amount').addEventListener('input', updateQRCode);
+    $('#tp_content').addEventListener('input', updateQRCode);
+    $('#quickContact').addEventListener('click',()=>{ showToast('Chức năng liên hệ nhanh đang hoạt động.','info'); });
+
+    // Modified: doTopupRequest now creates a pending request
+    $('#doTopupRequest').addEventListener('click', () => {
+        const currentUserData = getCurrentDemoUser();
+        if (!currentUserData) {
+            showToast('Bạn cần đăng nhập để tạo yêu cầu nạp tiền.', 'error');
+            return;
+        }
+
+        const amount = parseFloat($('#tp_amount').value);
+        const memo = $('#tp_content').value.trim();
+
+        if (isNaN(amount) || amount <= 0) {
+            showToast('Vui lòng nhập số tiền hợp lệ.', 'error');
+            return;
+        }
+        if (!memo) {
+            showToast('Vui lòng nhập nội dung chuyển khoản.', 'error');
+            return;
+        }
+
+        let requests = getTopupRequests();
+        const newRequestId = requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 1;
+
+        const newRequest = {
+            id: newRequestId,
+            userId: currentUserData.id,
+            amount: amount,
+            memo: memo,
+            timestamp: new Date().toISOString(),
+            status: 'pending' // Initial status
+        };
+        requests.push(newRequest);
+        setTopupRequests(requests);
+
+        showToast('Yêu cầu nạp tiền của bạn đã được gửi. Vui lòng chờ Admin duyệt.', 'info');
+        $('#topupModal').classList.remove('active');
+        renderUserTopupRequests(); // Update user's view of requests
+        if (getAdminLoginStatus()) { // If admin is logged in, update their view too
+            renderAdminTopupRequests();
+        }
+    });
+
+
+    $('#doRegister').addEventListener('click', () => {
+        const name = $('#rg_name').value.trim();
+        const email = $('#rg_email').value.trim();
+        const password = $('#rg_pass').value;
+        const password2 = $('#rg_pass2').value;
+        const err = $('#regErr');
+        err.style.display = 'none';
+
+        if (!name || !email || password.length < 6) { err.textContent = 'Vui lòng điền đủ & mật khẩu >= 6'; err.style.display = 'block'; shake($('#authModal .modal-card')); return; }
+        if (password !== password2) { err.textContent = 'Mật khẩu xác nhận không khớp'; err.style.display = 'block'; shake($('#authModal .modal-card')); return; }
+
+        let users = getDemoUsers();
+        if (users.find(u => u.email === email)) {
+            err.textContent = 'Email đã tồn tại.'; err.style.display = 'block'; shake($('#authModal .modal-card')); return;
+        }
+
+        const newUser = {
+            id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1, // Generate unique ID
+            name,
+            email,
+            password,
+            balance: 100000,
+            tools: [],
+            regDate: new Date().toISOString()
+        };
+        users.push(newUser);
+        setDemoUsers(users);
+
+        showToast('Đăng ký tài khoản thành công. Vui lòng đăng nhập', 'success');
+        $('#rg_name').value = ''; $('#rg_email').value = ''; $('#rg_pass').value = ''; $('#rg_pass2').value = '';
+        openAuth('login');
+    });
+
+    $('#doLogin').addEventListener('click', () => {
+        const email = $('#li_user').value.trim();
+        const password = $('#li_pass').value;
+        const err = $('#loginErr');
+        err.style.display = 'none';
+
+        if (!email || !password) { err.textContent = 'Vui lòng điền đầy đủ'; err.style.display = 'block'; shake($('#authModal .modal-card')); return; }
+
+        const users = getDemoUsers();
+        const user = users.find(u => (u.email === email || u.name === email) && u.password === password);
+
+        if (user) {
+            showToast('Đăng nhập sever thành công', 'success');
+            $('#authModal').classList.remove('active');
+            enterUser(user);
+        } else {
+            err.textContent = 'Sai tài khoản hoặc mật khẩu đã đăng kí.'; err.style.display = 'block'; shake($('#authModal .modal-card'));
+        }
+    });
+
+    $('#doAdminLogin').addEventListener('click', () => {
+        const username = $('#ad_user').value.trim();
+        const password = $('#ad_pass').value;
+        if (username === 'admin' && password === 'DANGKHOA_DEV_MXH_2025') {
+            enterAdmin();
+            showToast('Đăng nhập Admin sever thành công!','success');
+            $('#adminLoginModal').classList.remove('active');
+        } else {
+            showToast('Sai thông tin admin demo.','error');
+            shake($('#adminLoginModal .modal-card'));
+        }
+    });
+
+    $('#saveProfile').addEventListener('click', () => {
+        const name = $('#pf_name').value.trim();
+        const email = $('#pf_email').value.trim();
+        const currentUserData = getCurrentDemoUser();
+        
+        if (!name || !email || !currentUserData) { showToast('Điền đủ thông tin', 'error'); return; }
+
+        let users = getDemoUsers();
+        const userIndex = users.findIndex(u => u.email === currentUserData.email);
+        if (userIndex !== -1) {
+            users[userIndex].name = name;
+            users[userIndex].email = email;
+            setDemoUsers(users);
+            setCurrentDemoUser(users[userIndex]);
+            showToast('Lưu hồ sơ thành công', 'success');
+            $('#profileModal').classList.remove('active');
+            enterUser(users[userIndex]);
+        } else {
+             showToast('Không tìm thấy user để cập nhật.','error');
+        }
+    });
+
+    $('#btnIncreaseVisits').addEventListener('click', () => {
+        const amount = Number($('#manualVisits').value || 0);
+        if (amount > 0) {
+            currentVisits += amount;
+            localStorage.setItem(LS_VISITS_KEY, currentVisits.toString());
+            showToast(`Đã tăng thêm ${amount} lượt truy cập demo. Tổng: ${currentVisits}`, 'success');
+            renderStats(); // Re-render stats to update map and pulse animation
+        } else {
+            showToast('Số lượng không hợp lệ.','error');
+        }
+    });
+
+    function handleBuy(e){
+      const currentUserData = getCurrentDemoUser();
+      if (!currentUserData) {
+          showToast('Vui lòng đăng nhập để mua tool.','error');
+          openAuth('login');
+          return;
+      }
+      const id = e.target.dataset.id;
+      const tool = TOOLS.find(t => t.id === id);
+
+      if (currentUserData.balance < tool.price) {
+          showToast('Số dư không đủ để mua tool này.', 'error');
+          return;
+      }
+
+      currentUserData.balance -= tool.price;
+      currentUserData.tools = currentUserData.tools || [];
+      if (!currentUserData.tools.includes(tool.id)) {
+          currentUserData.tools.push(tool.id);
+      }
+
+      let users = getDemoUsers();
+      const userIndex = users.findIndex(u => u.email === currentUserData.email);
+      if (userIndex !== -1) {
+          users[userIndex] = currentUserData;
+          setDemoUsers(users);
+          setCurrentDemoUser(currentUserData);
+          showToast(`Bạn đã mua ${tool.name} thành công!`, 'success');
+          enterUser(currentUserData);
+      } else {
+           showToast('Lỗi khi cập nhật thông tin user.','error');
+      }
+    }
+
+    // Function to handle opening tool detail modal
+    function handleToolDetail(e) {
+        const toolId = e.target.dataset.id;
+        const tool = TOOLS.find(t => t.id === toolId);
+        if (tool) {
+            $('#td_name').textContent = tool.name;
+            $('#td_fullDesc').textContent = tool.fullDesc;
+            $('#td_price').textContent = tool.price.toLocaleString() + ' đ';
+            
+            const tdBuyBtn = $('#td_buyBtn');
+            tdBuyBtn.setAttribute('data-id', tool.id);
+            // Remove existing event listener to prevent multiple calls
+            tdBuyBtn.removeEventListener('click', handleBuyFromDetail);
+            tdBuyBtn.addEventListener('click', handleBuyFromDetail);
+
+            const tdViewMoreLink = $('#td_viewMoreLink');
+            if (tool.detailLink) {
+                tdViewMoreLink.href = tool.detailLink;
+                tdViewMoreLink.classList.remove('hidden');
+            } else {
+                tdViewMoreLink.classList.add('hidden');
+            }
+
+            $('#toolDetailModal').classList.add('active');
+        } else {
+            showToast('Không tìm thấy thông tin tool.', 'error');
+        }
+    }
+
+    // Handle buy action from the detail modal
+    function handleBuyFromDetail(e) {
+        // This will call the existing handleBuy logic after closing the modal
+        $('#toolDetailModal').classList.remove('active');
+        handleBuy(e); 
+    }
+
+    // Handle Admin Edit User click
+    function handleAdminEditUser(e) {
+        const userId = parseInt(e.target.dataset.id);
+        const users = getDemoUsers();
+        const userToEdit = users.find(u => u.id === userId);
+
+        if (userToEdit) {
+            $('#aeu_id').value = userToEdit.id;
+            $('#aeu_name').value = userToEdit.name;
+            $('#aeu_email').value = userToEdit.email;
+            $('#aeu_balance').value = userToEdit.balance;
+            $('#adminEditUserModal').classList.add('active');
+        } else {
+            showToast('Không tìm thấy người dùng để chỉnh sửa.', 'error');
+        }
+    }
+
+    // Handle saving changes from Admin Edit User modal
+    $('#doAdminEditUser').addEventListener('click', () => {
+        const userId = parseInt($('#aeu_id').value);
+        const newName = $('#aeu_name').value.trim();
+        const newEmail = $('#aeu_email').value.trim();
+        const newBalance = parseFloat($('#aeu_balance').value);
+
+        if (!newName || !newEmail || isNaN(newBalance) || newBalance < 0) {
+            showToast('Vui lòng điền đầy đủ và đúng định dạng thông tin người dùng.', 'error');
+            return;
+        }
+
+        let users = getDemoUsers();
+        const userIndex = users.findIndex(u => u.id === userId);
+
+        if (userIndex !== -1) {
+            users[userIndex].name = newName;
+            users[userIndex].email = newEmail;
+            users[userIndex].balance = newBalance;
+            setDemoUsers(users);
+
+            // If the edited user is the currently logged-in user, update their session too
+            const currentUser = getCurrentDemoUser();
+            if (currentUser && currentUser.id === userId) {
+                setCurrentDemoUser(users[userIndex]);
+                enterUser(users[userIndex]); // Re-render user UI
+            } else {
+                // If admin is editing, but not the current user, just refresh admin user list
+                renderAdminUsers(); 
+            }
+            showToast(`Đã cập nhật thông tin người dùng: ${newName}`, 'success');
+            $('#adminEditUserModal').classList.remove('active');
+        } else {
+            showToast('Không tìm thấy người dùng để cập nhật.', 'error');
+        }
+    });
+
+    // Handle deleting user from Admin Edit User modal
+    $('#doAdminDeleteUserFromEditModal').addEventListener('click', () => {
+        const userId = parseInt($('#aeu_id').value);
+        let users = getDemoUsers();
+        const initialUserCount = users.length;
+
+        users = users.filter(u => u.id !== userId);
+        setDemoUsers(users);
+
+        if (users.length < initialUserCount) {
+            showToast('Đã xóa người dùng thành công!', 'success');
+            $('#adminEditUserModal').classList.remove('active');
+            renderAdminUsers(); // Re-render admin user list
+
+            // Check if the deleted user was the currently logged-in user
+            const currentUser = getCurrentDemoUser();
+            if (currentUser && currentUser.id === userId) {
+                logout(); // Log out the deleted user
+                showToast('Người dùng bạn vừa xóa đã đăng xuất.','warn');
+            }
+        } else {
+            showToast('Không tìm thấy người dùng để xóa.', 'error');
+        }
+    });
+
+    // New: Handle Approve Topup Request
+    function handleApproveTopup(e) {
+        const requestId = parseInt(e.target.dataset.id);
+        const userId = parseInt(e.target.dataset.userid);
+        const amount = parseFloat(e.target.dataset.amount);
+
+        let requests = getTopupRequests();
+        const requestIndex = requests.findIndex(req => req.id === requestId);
+
+        if (requestIndex !== -1) {
+            requests[requestIndex].status = 'approved';
+            setTopupRequests(requests);
+
+            let users = getDemoUsers();
+            const userIndex = users.findIndex(u => u.id === userId);
+            if (userIndex !== -1) {
+                users[userIndex].balance += amount;
+                setDemoUsers(users);
+
+                // If the approved user is currently logged in, update their UI
+                const currentUser = getCurrentDemoUser();
+                if (currentUser && currentUser.id === userId) {
+                    setCurrentDemoUser(users[userIndex]);
+                    enterUser(users[userIndex]); // Re-render user UI
+                    showToast(`Yêu cầu nạp ${amount.toLocaleString()}đ của bạn đã được duyệt!`, 'success');
+                } else {
+                    showToast(`Đã duyệt yêu cầu nạp ${amount.toLocaleString()}đ cho user ID ${userId}.`, 'success');
+                }
+            } else {
+                showToast('Lỗi: Không tìm thấy người dùng để cộng tiền.', 'error');
+            }
+            renderAdminTopupRequests(); // Re-render admin's view
+            renderUserTopupRequests(); // Also re-render user's view if they are on that page
+        } else {
+            showToast('Không tìm thấy yêu cầu nạp tiền để duyệt.', 'error');
+        }
+    }
+
+    // New: Handle Reject Topup Request
+    function handleRejectTopup(e) {
+        const requestId = parseInt(e.target.dataset.id);
+        const userId = parseInt(e.target.dataset.userid); // Get userId to notify the user
+
+        let requests = getTopupRequests();
+        const requestIndex = requests.findIndex(req => req.id === requestId);
+
+        if (requestIndex !== -1) {
+            requests[requestIndex].status = 'rejected';
+            setTopupRequests(requests);
+            
+            // Notify the user if they are logged in
+            const currentUser = getCurrentDemoUser();
+            if (currentUser && currentUser.id === userId) {
+                showToast(`Yêu cầu nạp tiền của bạn đã bị từ chối. Vui lòng liên hệ hỗ trợ nếu có thắc mắc.`, 'error');
+                enterUser(currentUser); // Re-render to update their request status display
+            } else {
+                 showToast(`Đã từ chối yêu cầu nạp tiền ID ${requestId} cho user ID ${userId}.`, 'warn');
+            }
+            renderAdminTopupRequests(); // Re-render admin's view
+            renderUserTopupRequests(); // Also re-render user's view if they are on that page
+        } else {
+            showToast('Không tìm thấy yêu cầu nạp tiền để từ chối.', 'error');
+        }
+    }
+
+
+    // Tab handling for Admin Panel
+    // New tab for admin: Topup Requests
+    $('#tabAdminTopupRequests').addEventListener('click', () => {
+        $('#tabAdminTopupRequests').classList.add('active');
+        $('#tabPend').classList.remove('active');
+        $('#tabHist').classList.remove('active');
+        $('#tabUsers').classList.remove('active');
+        $('#tabStats').classList.remove('active');
+
+        $('#adminTopupRequestsContent').classList.remove('hidden');
+        $('#adminPendContent').classList.add('hidden');
+        $('#adminHistContent').classList.add('hidden');
+        $('#adminUsersContent').classList.add('hidden');
+        $('#adminStatsContent').classList.add('hidden');
+        renderAdminTopupRequests();
+    });
+
+    $('#tabPend').addEventListener('click', () => {
+      $('#tabPend').classList.add('active'); $('#tabHist').classList.remove('active'); $('#tabUsers').classList.remove('active'); $('#tabStats').classList.remove('active'); $('#tabAdminTopupRequests').classList.remove('active');
+      $('#adminPendContent').classList.remove('hidden'); $('#adminHistContent').classList.add('hidden'); $('#adminUsersContent').classList.add('hidden'); $('#adminStatsContent').classList.add('hidden'); $('#adminTopupRequestsContent').classList.add('hidden');
+    });
+    $('#tabHist').addEventListener('click', () => {
+      $('#tabHist').classList.add('active'); $('#tabPend').classList.remove('active'); $('#tabUsers').classList.remove('active'); $('#tabStats').classList.remove('active'); $('#tabAdminTopupRequests').classList.remove('active');
+      $('#adminHistContent').classList.remove('hidden'); $('#adminPendContent').classList.add('hidden'); $('#adminUsersContent').classList.add('hidden'); $('#adminStatsContent').classList.add('hidden'); $('#adminTopupRequestsContent').classList.add('hidden');
+    });
+    $('#tabUsers').addEventListener('click', () => { // NEW TAB LISTENER
+      $('#tabUsers').classList.add('active'); $('#tabPend').classList.remove('active'); $('#tabHist').classList.remove('active'); $('#tabStats').classList.remove('active'); $('#tabAdminTopupRequests').classList.remove('active');
+      $('#adminUsersContent').classList.remove('hidden'); $('#adminPendContent').classList.add('hidden'); $('#adminHistContent').classList.add('hidden'); $('#adminStatsContent').classList.add('hidden'); $('#adminTopupRequestsContent').classList.add('hidden');
+      renderAdminUsers(); // Render users when this tab is active
+    });
+    $('#tabStats').addEventListener('click', () => {
+      $('#tabStats').classList.add('active'); $('#tabPend').classList.remove('active'); $('#tabHist').classList.remove('active'); $('#tabUsers').classList.remove('active'); $('#tabAdminTopupRequests').classList.remove('active');
+      $('#adminStatsContent').classList.remove('hidden'); $('#adminPendContent').classList.add('hidden'); $('#adminHistContent').classList.add('hidden'); $('#adminUsersContent').classList.add('hidden'); $('#adminTopupRequestsContent').classList.add('hidden');
+      renderStats();
+    });
+
+    // Navigation and section toggles
+    $all('.menu-item').forEach(it => it.addEventListener('click', (e) => {
+        e.preventDefault();
+        const view = it.dataset.view;
+        const isHeaderNav = it.closest('.header-nav-links');
+
+        $all('.side-menu .menu-item').forEach(m => m.classList.remove('active'));
+        $all('.header-nav-links .menu-item').forEach(m => m.classList.remove('active'));
+
+        if (isHeaderNav) {
+            it.classList.add('active');
+            $(`.side-menu .menu-item[data-view="${view}"]`)?.classList.add('active');
+        } else {
+            it.classList.add('active');
+            $(`.header-nav-links .menu-item[data-view="${view}"]`)?.classList.add('active');
+        }
+        
+        $all('main section').forEach(section => section.classList.add('hidden')); // Hide all sections
+        $('#topupModal').classList.remove('active'); // Close modals on navigation
+        $('#toolDetailModal').classList.remove('active');
+        $('#adminEditUserModal').classList.remove('active');
+
+
+        if (view === 'home') {
+            $('#welcomeSection').classList.remove('hidden');
+        } else if (view === 'store') {
+            $('#storeView').classList.remove('hidden');
+        } else if (view === 'mytools') {
+            $('#mytoolsView').classList.remove('hidden');
+        } else if (view === 'profile') {
+            $('#profileView').classList.remove('hidden');
+        } else if (view === 'tx') {
+            $('#txView').classList.remove('hidden');
+            renderUserTopupRequests(); // Ensure user topup requests are rendered here
+        } else if (view === 'topup') {
+            handleOpenTopupModal(); // This will show the modal, not a section
+        } else if (view === 'stats') {
+            $('#statsView').classList.remove('hidden');
+            renderStats();
+        } else if (view === 'contact') {
+            $('#contactView').classList.remove('hidden');
+        } else if (view === 'admin') {
+             $('#adminPanel').classList.remove('hidden');
+             renderAdminTopupRequests(); // Ensure admin topup requests are rendered when admin panel is opened
+        }
+
+        if (view !== 'stats') {
+            $('#mapLoader').classList.add('hidden');
+        }
+
+        if (window.innerWidth < 1200) {
+            sideMenu.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+        }
+    }));
+
+    // Event listener for banner Projects button (now opens register)
+    $('#bannerProjectsBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        openAuth('register');
+    });
+
+    // Event listener for banner Contact button
+    $('#bannerContactBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        $all('.menu-item').forEach(m => m.classList.remove('active'));
+        $('[data-view="contact"]').classList.add('active');
+        
+        $all('main section').forEach(section => section.classList.add('hidden')); // Hide all sections
+        $('#contactView').classList.remove('hidden'); // Show contact view
+        
+        // Hide other modals
+        $('#topupModal').classList.remove('active');
+        $('#toolDetailModal').classList.remove('active');
+        $('#adminEditUserModal').classList.remove('active');
+
+        if (window.innerWidth < 1200) {
+            sideMenu.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+        }
+    });
+
+
+    // Send Contact Email functionality
+    $('#sendContactEmail').addEventListener('click', () => {
+        const name = $('#contactName').value.trim();
+        const email = $('#contactEmail').value.trim();
+        const subject = $('#contactSubject').value.trim();
+        const message = $('#contactMessage').value.trim();
+
+        if (!name || !email || !subject || !message) {
+            showToast('Vui lòng điền đầy đủ các trường thông tin!', 'error');
+            return;
+        }
+
+        const recipientEmail = 'nkhoa3906@gmail.com';
+        const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Xin chào, tên tôi là ${name} (${email}).\n\n${message}\n\n`)}`;
+        
+        window.open(mailtoLink, '_blank');
+        showToast('Đang mở ứng dụng email của bạn...', 'info');
+
+        // Clear the form after attempting to send
+        $('#contactName').value = '';
+        $('#contactEmail').value = '';
+        $('#contactSubject').value = '';
+        $('#contactMessage').value = '';
+    });
+
+
+    function openAuth(mode='login'){
+      $('#authModal').classList.add('active');
+      $('#loginFormContent').classList.toggle('hidden', mode !== 'login');
+      $('#registerFormContent').classList.toggle('hidden', mode !== 'register');
+      $('#tabLogin').classList.toggle('active', mode === 'login');
+      $('#tabRegister').classList.toggle('active', mode === 'login' ? false : true);
+
+      if(mode === 'login'){
+          $('#li_user').value = 'demo@user.com';
+          $('#li_pass').value = '123456';
+      } else {
+          $('#rg_name').value = '';
+          $('#rg_email').value = '';
+          $('#rg_pass').value = '';
+          $('#rg_pass2').value = '';
+      }
+    }
+    
+    function trackVisit() {
+        currentVisits = parseInt(localStorage.getItem(LS_VISITS_KEY) || '0');
+        if (sessionStorage.getItem('session_visited_flag') === null) {
+            currentVisits += 1;
+            localStorage.setItem(LS_VISITS_KEY, currentVisits.toString());
+            sessionStorage.setItem('session_visited_flag', 'true');
+        }
+    }
+
+    // Particle Animation on Canvas
+    const canvas = document.getElementById('bannerCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const particleCount = 60;
+    const maxLineDistance = 120; // Max distance for lines
+
+    // Particle class
+    class Particle {
+        constructor(x, y, radius, color) {
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.color = color;
+            this.vx = (Math.random() - 0.5) * 0.5; // Slower movement
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.alpha = Math.random() * 0.7 + 0.3; // Random opacity
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.globalAlpha = this.alpha;
+            ctx.shadowBlur = this.radius * 2; // Glow effect
+            ctx.shadowColor = this.color;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0; // Reset shadow
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Bounce off walls
+            if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+                this.vx *= -1;
+            }
+            if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
+                this.vy *= -1;
+            }
+        }
+    }
+
+    // Initialize particles
+    function initParticles() {
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const radius = Math.random() * 1.5 + 1; // Smaller particles
+            particles.push(new Particle(x, y, radius, 'var(--particle-color)'));
+        }
+    }
+
+    // Connect particles with lines
+    function connectParticles() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i; j < particles.length; j++) {
+                const p1 = particles[i];
+                const p2 = particles[j];
+                const distance = Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
+
+                if (distance < maxLineDistance) {
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = 'var(--line-color)';
+                    ctx.lineWidth = 0.5;
+                    ctx.globalAlpha = 1 - (distance / maxLineDistance);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+            }
+        }
+    }
+
+    // Animation loop
+    function animateBanner() {
+        requestAnimationFrame(animateBanner);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        connectParticles();
+
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+    }
+
+    // Handle canvas resize
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        initParticles();
+    }
+
+
+    /***********************
+     * INIT
+     ***********************/
+    window.addEventListener('load', async () => {
+        $('#fYear').textContent = new Date().getFullYear();
+        renderStore();
+        trackVisit();
+        
+        const loggedInUser = getCurrentDemoUser();
+        const loggedInAdmin = getAdminLoginStatus();
+
+        if (loggedInUser) {
+            enterUser(loggedInUser);
+            showToast(`Chào mừng trở lại, ${loggedInUser.name}!`, 'info');
+        } else if (loggedInAdmin) {
+            enterAdmin();
+            showToast('Chào mừng trở lại, Admin!', 'info');
+        } else {
+            refreshGuestUI();
+        }
+
+        const themeToggle=$('#themeToggle');
+        themeToggle.checked = localStorage.getItem('DK_THEME')==='light';
+        document.documentElement.setAttribute('data-theme', themeToggle.checked? 'light':'dark');
+        themeToggle.addEventListener('change',()=>{ const t=themeToggle.checked? 'light':'dark'; document.documentElement.setAttribute('data-theme',t); localStorage.setItem('DK_THEME', t) })
+
+        $('#btnOpenMobileMenu').addEventListener('click', () => { 
+            $('#sideMenu').classList.add('active'); 
+            $('#mobileOverlay').classList.add('active'); 
+        });
+        $('#mobileOverlay').addEventListener('click', () => { 
+            $('#sideMenu').classList.remove('active'); 
+            $('#mobileOverlay').classList.remove('active'); 
+        });
+
+        // Initialize and start banner animation
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        animateBanner();
+    });
+  </script>
+</body>
+</html>
